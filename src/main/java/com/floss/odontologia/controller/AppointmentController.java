@@ -4,10 +4,7 @@ import com.floss.odontologia.model.Appointment;
 import com.floss.odontologia.model.Dentist;
 import com.floss.odontologia.service.interfaces.IAppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,27 +17,27 @@ public class AppointmentController {
     @Autowired
     private IAppointmentService iAppointmentService;
 
-    @RequestMapping("/create")
+    @PostMapping("/create")
     public String createAppointment(@RequestBody Appointment appointment){
         return iAppointmentService.createAppo(appointment);
     }
 
-    @RequestMapping("/find/{id}")
+    @GetMapping("/find/{id}")
     public Appointment getAppointmentById(@PathVariable Long id){
         return iAppointmentService.getAppointmentById(id);
     }
 
-    @RequestMapping("/find-all")
+    @GetMapping("/find-all")
     public List<Appointment> getAllAppointments(){
         return iAppointmentService.getAllAppointments();
     }
 
-    @RequestMapping("/appointments-today")
+    @GetMapping("/appointments-today")
     public int getAppointmentNumberToday(@RequestBody Dentist dentist){
         return iAppointmentService.getAppointmentNumberToday(dentist);
     }
 
-    @RequestMapping("/hours/{date}/{selectedDay}")
+    @GetMapping("/hours/{date}/{selectedDay}")
     public List<LocalTime> getHoursOfDentist(
                                              @PathVariable LocalDate date,
                                              @RequestBody Dentist dentist,
@@ -48,12 +45,12 @@ public class AppointmentController {
         return iAppointmentService.getHoursOfDentist(date, dentist, selectedDay);
     }
 
-    @RequestMapping("/edit")
+    @PutMapping("/edit")
     public String editAppointment(@RequestBody Appointment appointment){
         return iAppointmentService.editAppo(appointment);
     }
 
-    @RequestMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public String deleteAppointment(@PathVariable Long id){
         return iAppointmentService.deleteAppo(id);
     }

@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "API de Usuarios",
+                title = "API para Clinica Odontologica",
                 version = "1.0",
-                description = "API REST para gestión de usuarios"
+                description = "API REST para gestión de pacientes, dentistas, secretarios"
         )
 )
 @Configuration

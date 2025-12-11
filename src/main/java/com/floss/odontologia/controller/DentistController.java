@@ -5,10 +5,7 @@ import com.floss.odontologia.model.Dentist;
 import com.floss.odontologia.model.Patient;
 import com.floss.odontologia.service.interfaces.IDentistService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,32 +16,32 @@ public class DentistController {
     @Autowired
     private IDentistService iDentistService;
 
-    @RequestMapping("/create")
+    @PostMapping("/create")
     public String createDentist(@RequestBody Dentist dentist){
         return iDentistService.createDentist(dentist);
     }
 
-    @RequestMapping("/find/{id}")
+    @GetMapping("/find/{id}")
     public Dentist findDentistById(@PathVariable Long id){
         return iDentistService.getDentistById(id);
     }
 
-    @RequestMapping("/find-all")
+    @GetMapping("/find-all")
     public List<Dentist> findAllDentist(){
         return iDentistService.getAllDentists();
     }
 
-    @RequestMapping("/appointments-dentist")
+    @GetMapping("/appointments-dentist")
     public List<Appointment> getAppointmentsByDentist(@RequestBody Dentist dentist){
         return iDentistService.getAppointmentsByDentist(dentist);
     }
 
-    @RequestMapping("/patients-dentist")
+    @GetMapping("/patients-dentist")
     public List<Patient> getPatientsByDentist(@RequestBody Dentist dentist){
         return iDentistService.getPatientsByDentist(dentist);
     }
 
-    @RequestMapping("/edit")
+    @PutMapping("/edit")
     public String editDentist(@RequestBody Dentist dentist){
         return iDentistService.editDentist(dentist);
     }
