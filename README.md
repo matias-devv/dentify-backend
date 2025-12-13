@@ -1,16 +1,12 @@
- # Clínica Odontológica – Backend
-
-
+ # Clínica Odontológica – Backend  
+ 
 ## 📌 Descripción
 
 Backend para la gestión integral de una clínica odontológica. El sistema está orientado a facilitar la **administración de pacientes**, la **gestión de odontólogos** y la **reserva inteligente de turnos**, priorizando escalabilidad, reglas de negocio claras y buenas prácticas profesionales.
 
 El proyecto es **personal**, pero fue diseñado con una visión **productiva y comercial**, pensando en su uso real por clínicas odontológicas.
 
-Actualmente funciona como una **API REST**. La integración con frontend está planificada a corto plazo.
-
-
-
+Actualmente funciona como una **API REST**. La integración con frontend está planificada a corto plazo.  
 
 ## 🛠️ Tecnologías
 
@@ -24,6 +20,7 @@ Actualmente funciona como una **API REST**. La integración con frontend está p
 * **Lombok**
 * **Swagger (OpenAPI + Swagger UI)**
 * **Postman (colección de endpoints)**
+  
   
 ## ✨ Features
 
@@ -40,10 +37,8 @@ Actualmente funciona como una **API REST**. La integración con frontend está p
 * Validaciones avanzadas de disponibilidad horaria
 * Manejo de errores mediante **ResponseEntity** y códigos HTTP
 * Documentación automática de la API con **Swagger**
-
-
-
-## ⚙️ Proceso de desarrollo
+  
+## ⚙️ Proceso de desarrollo 
 
 Proyecto desarrollado de forma individual, siguiendo un enfoque incremental y profesional:
 
@@ -58,8 +53,7 @@ Se aplicaron buenas prácticas como:
 * Uso de **DTOs**
 * **Inyección de dependencias**
 * Separación clara de capas (controller, service, repository)
-
-
+  
 
 ## 📚 Qué aprendí
 
@@ -76,8 +70,7 @@ El mayor desafío técnico fue el cálculo dinámico de **bloques horarios dispo
 * Existencia del odontólogo
 * Turnos previamente reservados
 * Estado activo del schedule
-
-
+  
 
 ## 🚀 Posibles mejoras
 
@@ -88,8 +81,7 @@ El mayor desafío técnico fue el cálculo dinámico de **bloques horarios dispo
 * Generación de **PDFs**
 * Contenerización con **Docker**
 * Integración con frontend
-
-
+  
 
 ## ▶️ Cómo correr el proyecto
 
@@ -98,7 +90,6 @@ El mayor desafío técnico fue el cálculo dinámico de **bloques horarios dispo
 * **Java 17**
 * **Maven**
 * **MySQL** (opcional, se puede usar H2)
-
 
 
 ### Configuración de base de datos (MySQL)
@@ -119,7 +110,6 @@ spring.datasource.password=admin
 > ⚠️ Asegurarse de que la base de datos `odontologica` exista previamente.
 
 
-
 ### Ejecución
 
 Desde la raíz del proyecto:
@@ -128,7 +118,8 @@ Desde la raíz del proyecto:
 mvn spring-boot:run
 ```
 
-La aplicación se levanta por defecto en:
+La aplicación se levanta por defecto en:  
+
 
 ```
 http://localhost:8080
@@ -162,10 +153,10 @@ Para un uso correcto de la aplicación, **deben existir usuarios asociados a est
   - Paciente
   - Fecha y bloque horario
 
-Estas validaciones aseguran **coherencia de datos** y reflejan un **flujo realista de funcionamiento** dentro de una clínica odontológica.
+Estas validaciones aseguran **coherencia de datos** y reflejan un **flujo realista de funcionamiento** dentro de una clínica odontológica.  
 
 
-
+ 
 
 ### Documentación de la API (Swagger)
 
@@ -183,7 +174,8 @@ La documentación se genera automáticamente mediante **Swagger/OpenAPI annotati
 
 El proyecto incluye una **colección de Postman** para probar todos los endpoints.
 
-📎  https://rzz-matias18-7061175.postman.co/workspace/Matias-Rodriguez's-Workspace~ab5a65d3-1bae-4284-83bf-2262438b3e42/collection/49727979-57d9cdf6-c5c2-4e27-b076-035d15abd4fa?action=share&source=copy-link&creator=49727979
+📎  https://rzz-matias18-7061175.postman.co/workspace/Matias-Rodriguez's-Workspace~ab5a65d3-1bae-4284-83bf-2262438b3e42/collection/49727979-57d9cdf6-c5c2-4e27-b076-035d15abd4fa?action=share&source=copy-link&creator=49727979  
+
 
 
 
