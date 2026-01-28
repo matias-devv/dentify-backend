@@ -10,26 +10,28 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity @AllArgsConstructor @NoArgsConstructor @Getter @Setter @Table ( name = "pack_products")
+@Entity @AllArgsConstructor @NoArgsConstructor @Getter @Setter
+@Table ( name = "pack_products")
 public class PackProduct {
 
     @Id @GeneratedValue ( strategy = GenerationType.IDENTITY)
     private Long id_pack_product;
 
+    @Column(nullable = false)
+    List<Long> products_ids;
+
     private String name_pack;
     private LocalDate date_creation;
     private BigDecimal total_price;
     private BigDecimal price_without_discount;
+
+    @Column( nullable = true)
+    private Integer discount;
     private String description;
-    private Boolean active;
 
     @Column(name = "duration_minutes", nullable = true)
     private Integer duration_minutes;
-    @Column( nullable = true)
-    private Integer discount;
-
-    @Column(nullable = false)
-    List<Long> products_ids;
+    private Boolean active;
 
     @OneToMany ( mappedBy = "pack" )
     private List<Treatment> treatments;

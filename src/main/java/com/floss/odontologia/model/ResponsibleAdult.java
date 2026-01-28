@@ -22,10 +22,8 @@ public class ResponsibleAdult {
     private String surname;
     private String phone_number;
     private String email;
-    @Enumerated (EnumType.STRING)
-    private Relation relacionEnum;
 
-    @ManyToOne
-    @JoinColumn(name="id_patient")
-    private Patient patient;
+    @Enumerated (EnumType.STRING)
+    private Relation relation;
+
 }

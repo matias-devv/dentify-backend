@@ -2,23 +2,21 @@ package com.floss.odontologia.enums;
 
 public enum TreatmentStatus {
 
-    // Initial states
-    PAYMENT_PENDING,
-    PARTIAL_PAYMENT,
+    CREATED,            // treatment created, with at least one appointment assigned
+                        // clinical care has not yet begun
 
-    // States during treatment
-    SCHEDULED,
-    IN_PROGRESS,
-    PAUSED,
-    RESCHEDULED,
+    IN_PROGRESS,        // at least one appointment has been ADMITTED or COMPLETED
+                        // partial absences may occur without affecting the status
 
-    // Final states
-    COMPLETED,
-    PATIENT_CANCELLED,
-    FACILITY_CANCELLED,
-    SYSTEM_CANCELLED,
+    COMPLETED,          // all scheduled appointments have been COMPLETED
+                        // clinically completed (even if payments remain)
 
-    // Follow-up states
-    FOLLOW_UP,
-    EVALUATION
+    ABANDONED,          // the patient stopped attending (repeated NO_SHOW)
+                        // not formally canceled, useful for metrics
+
+    PATIENT_CANCELLED,  // explicit cancellation by the patient
+
+    FACILITY_CANCELLED, // cancelled by dentist/administration
+
+    SYSTEM_CANCELLED    // automatically canceled (rules)
 }

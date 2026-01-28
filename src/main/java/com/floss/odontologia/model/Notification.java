@@ -1,39 +1,53 @@
 package com.floss.odontologia.model;
 
+import com.floss.odontologia.enums.NotificationChannel;
+import com.floss.odontologia.enums.NotificationStatus;
+import com.floss.odontologia.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity @Getter  @Setter @AllArgsConstructor
 @NoArgsConstructor @Table ( name = "notifications")
 public class Notification {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_notification;
 
-    @ManyToOne ( fetch = FetchType.LAZY)
-    @JoinColumn ( name = "id_appointment")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_appointment")
     private Appointment appointment;
 
-    @OneToOne ( mappedBy = "notification")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_pay")
     private Pay pay;
 
     @Enumerated(EnumType.STRING)
-    private NotificationType notificationType;
-    @Enumerated(EnumType.STRING)
-    private NotificationChannel notificationChannel;
-    @Enumerated(EnumType.STRING)
-    private NotificationStatus notificationStatus;
+    @Column(nullable = false)
+    private NotificationType type;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private NotificationChannel channel;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private NotificationStatus status;
+
+    @Column(nullable = false, length = 1000)
     private String message;
-    private LocalDate date_generation;
-    private LocalDate date_sent;
-    private Integer maximum_attempts;
-    private Integer attempts_made;
-    private String error_message;
 
+    private LocalDateTime dateGeneration;
+    private LocalDateTime dateSent;
+
+    private Integer maximumAttempts;
+    private Integer attemptsMade;
+
+    @Column(length = 500)
+    private String errorMessage;
 }
+

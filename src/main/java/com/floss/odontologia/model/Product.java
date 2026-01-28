@@ -18,20 +18,21 @@ public class Product {
     @Id @GeneratedValue ( strategy = GenerationType.IDENTITY)
     private Long id_product;
 
-    private String name_product;
-    private BigDecimal unit_price;
-    private String description;
-    private Boolean activo;
-
-    @Column(name = "duration_minutes", nullable = false)
-    private Integer duration_minutes;
-
-    @OneToMany( mappedBy = "product")
-    private List<Agenda> agendas;
-
     @ManyToOne
     @JoinColumn( name = "id_speciality")
     private Speciality speciality;
+
+    private String name_product;
+    private BigDecimal unit_price;
+    private String description;
+
+    @Column(name = "duration_minutes", nullable = false)
+    private Integer duration_minutes;
+    private Boolean activo;
+
+
+    @OneToMany( mappedBy = "product")
+    private List<Agenda> agendas;
 
     @OneToMany ( mappedBy = "product" )
     private List<Treatment> treatments;

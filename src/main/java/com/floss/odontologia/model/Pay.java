@@ -1,5 +1,7 @@
 package com.floss.odontologia.model;
 
+import com.floss.odontologia.enums.PaymentMethod;
+import com.floss.odontologia.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +10,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor @Table ( name = "pays")
 public class Pay {
@@ -30,8 +33,8 @@ public class Pay {
     @OneToOne ( mappedBy = "pay")
     private PaymentReceipt payment_receipt;
 
-    @OneToOne ( mappedBy = "pay")
-    private Notification notification;
+    @OneToMany ( mappedBy = "pay")
+    private List<Notification> notifications;
 
     @ManyToOne ( fetch = FetchType.LAZY)
     @JoinColumn ( name = "id_appointment", nullable = true)

@@ -8,7 +8,8 @@ import lombok.Setter;
 
 import java.time.DayOfWeek;
 
-@Entity @AllArgsConstructor @NoArgsConstructor @Getter @Setter @Table ( name = "days")
+@Entity @AllArgsConstructor @NoArgsConstructor @Getter @Setter
+@Table ( name = "days")
 public class Day {
 
     @Id @GeneratedValue (strategy = GenerationType.IDENTITY)

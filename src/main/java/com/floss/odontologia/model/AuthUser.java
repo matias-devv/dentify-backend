@@ -28,7 +28,6 @@ public class AuthUser {
                  inverseJoinColumns = @JoinColumn ( name = "role_id") )
     private Role role;
 
-    @OneToOne
-    @JoinColumn( name = "id_user_app" )
+    @OneToOne( mappedBy = "auth_user")
     private AppUser appUser;
 }

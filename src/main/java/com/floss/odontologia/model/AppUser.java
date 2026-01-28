@@ -25,21 +25,26 @@ public class AppUser {
     private String email;
     private String phone_number;
 
+    //1 app_user -> 1 auth_user
     @OneToOne
-    @JoinColumn(name=" id_auth_user")
+    @JoinColumn( name=" id_auth_user")
     private AuthUser auth_user;
 
+    //n app_user <-> n specialites
     @ManyToMany ( fetch = FetchType.LAZY)
     @JoinTable ( name = "appUser_specialities", joinColumns = @JoinColumn ( name = "id_user_app"),
                  inverseJoinColumns = @JoinColumn ( name = "id_speciality"))
     private Set<Speciality> specialities = new HashSet<>();
 
-    @OneToMany(mappedBy = "app_user")
+    //1 app_user -> n agendas
+    @OneToMany( mappedBy = "app_user" )
     private List<Agenda> agendas;
 
-    @OneToMany(mappedBy = "app_user")
+    //1 app_user -> n appointments
+    @OneToMany( mappedBy = "app_user")
     private List<Appointment> appointments;
 
+    //1 app_user -> n treatments
     @OneToMany( mappedBy = "app_user")
     private List<Treatment> treatments;
 }

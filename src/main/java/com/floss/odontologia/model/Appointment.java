@@ -38,10 +38,12 @@ public class Appointment {
     @Column(nullable = true)
     private String reason_for_cancellation;
 
+    //n appointment -> 1 user
     @ManyToOne
     @JoinColumn( name = "id_app_user", nullable = false)
     private AppUser app_user;
 
+    //n appointment -> 1 patient
     @ManyToOne
     @JoinColumn( name = "id_patient", nullable = false)
     private Patient patient;

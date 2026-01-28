@@ -1,5 +1,6 @@
 package com.floss.odontologia.model;
 
+import com.floss.odontologia.enums.CoverageType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,12 +26,18 @@ public class Patient {
     private String age;
     private LocalDate date_of_birth;
     private String insurance;
+
+    @Enumerated (EnumType.STRING)
+    private CoverageType coverageType;
+    
     private String phone_number;
 
     @OneToMany (mappedBy = "patient")
     private List<Appointment> appointments;
 
-    @OneToMany (mappedBy = "patient")
+    @ManyToMany ( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable ( name = "patients_responsibles_adults", joinColumns = @JoinColumn ( name = "id_patient"),
+                 inverseJoinColumns = @JoinColumn ( name = "id_responsible_adult"))
     private List<ResponsibleAdult> responsibleAdultList;
 
 }

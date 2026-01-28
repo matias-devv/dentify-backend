@@ -16,23 +16,30 @@ public class Agenda {
     @Id @GeneratedValue ( strategy = GenerationType.IDENTITY)
     private Long id_agenda;
 
-    private String agenda_name;
-    private Boolean active;
-
-    @Column (nullable = false)
-    private LocalDate start_date ;
-    @Column (nullable = false)
-    private LocalDate final_date;
-
-    @ManyToOne( fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
-    @JoinColumn( name = "id_schedule")
-    private List<Schedule> schedules;
-
+    // n agendas -> 1 user
     @ManyToOne ( fetch =  FetchType.LAZY)
     @JoinColumn ( name = "id_user")
     private AppUser app_user;
 
+    private String agenda_name;
+    private Boolean active;
+
+    @Column (nullable = false)
+    private LocalDate start_date;
+
+    @Column (nullable = false)
+    private LocalDate final_date;
+
+    // n agendas -> 1 product
     @ManyToOne( fetch =  FetchType.LAZY)
     @JoinColumn ( name = "id_product", nullable = true)
     private Product product;
+
+    // 1 agenda -> n schedules
+    @OneToMany ( mappedBy = "agenda")
+    private List<Schedule> schedules;
+
+    // 1 agenda -> n appointments
+    @OneToMany ( mappedBy = "agenda")
+    private List<Appointment> appointments;
 }
