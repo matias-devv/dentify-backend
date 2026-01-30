@@ -1,5 +1,6 @@
 package com.floss.odontologia.model;
 
+import com.floss.odontologia.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

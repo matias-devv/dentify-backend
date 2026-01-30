@@ -1,10 +1,9 @@
 package com.floss.odontologia.repository;
 
-import com.floss.odontologia.model.AppUser;
-import com.floss.odontologia.model.AuthUser;
+import com.floss.odontologia.model.Agenda;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IUserRepository extends JpaRepository<AppUser, Long> {
+public interface IAgendaRepository extends JpaRepository<Agenda, Long> {
 }

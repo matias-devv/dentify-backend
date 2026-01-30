@@ -36,7 +36,7 @@ public class Agenda {
     private Product product;
 
     // 1 agenda -> n schedules
-    @OneToMany ( mappedBy = "agenda")
+    @OneToMany ( mappedBy = "agenda", cascade = CascadeType.ALL)
     private List<Schedule> schedules;
 
     // 1 agenda -> n appointments

@@ -1,6 +1,7 @@
 package com.floss.odontologia.service.interfaces;
 
 import com.floss.odontologia.dto.request.UserDTO;
+import com.floss.odontologia.model.AppUser;
 import com.floss.odontologia.model.AuthUser;
 
 public interface IUserService {
@@ -8,6 +9,7 @@ public interface IUserService {
         //create
         public String createUser(UserDTO userDTO);
 
-        public String validateUser(AuthUser user);
+        public AppUser getUserEntityById(Long id);
 
+        public AppUser validateIfUserExists(Long id_app_user);
 }

@@ -1,0 +1,17 @@
+package com.floss.odontologia.dto.request;
+
+import com.floss.odontologia.model.Schedule;
+import jakarta.validation.constraints.NotBlank;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public record AgendaRequestDTO(Long id_agenda,
+                               @NotBlank String agendaName,
+                               @NotBlank LocalDate startDate,
+                               @NotBlank LocalDate finalDate,
+                               Boolean active,
+                               @NotBlank Long idUserApp,
+                               Long idProduct,
+                               @NotBlank List<Schedule> schedules) {
+}

@@ -20,9 +20,4 @@ public class UserController {
     public String createUser(@RequestBody UserDTO userDTO){
         return iUserService.createUser(userDTO);
     }
-
-    @PostMapping("/validate")
-    public String validateUser(@RequestBody AuthUser user){
-        return iUserService.validateUser(user);
-    }
 }

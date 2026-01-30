@@ -29,8 +29,9 @@ public class Patient {
 
     @Enumerated (EnumType.STRING)
     private CoverageType coverageType;
-    
+
     private String phone_number;
+    private String email;
 
     @OneToMany (mappedBy = "patient")
     private List<Appointment> appointments;
