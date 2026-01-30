@@ -8,43 +8,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-@RestController
-@RequestMapping("/schedule")
-public class ScheduleController {
-
-    @Autowired
-    private IScheduleService iScheduleService;
-
-    @PostMapping("/create")
-    public String createSchedule(@RequestBody Schedule schedule) {
-        return iScheduleService.createSchedule(schedule);
-    }
-
-    @GetMapping("/find/{id}")
-    public ResponseEntity<?> getScheduleById(@PathVariable Long id){
-
-        Schedule schedule = iScheduleService.getScheduleById(id);
-        if (schedule != null){
-             ScheduleDTO dto = iScheduleService.setAttributesDto(schedule);
-             return ResponseEntity.status(200).body(dto);
-        }
-        return ResponseEntity.status(404).body("Schedule not found");
-    }
-
-
-    @GetMapping("/find-all/{id_dentist}")
-    public ResponseEntity<?> getAllDentistSchedules(@PathVariable Long id_dentist){
-
-        List<ScheduleDTO> schedules = iScheduleService.getAllDentistSchedules(id_dentist);
-        if (schedules != null){
-            return ResponseEntity.status(200).body(schedules);
-        }
-        return ResponseEntity.status(404).body("The dentist has no schedules yet");
-    }
-
-    @PutMapping("/edit")
-    public void  editSchedule(@RequestBody Schedule schedule) {
-        iScheduleService.editSchedule(schedule);
-    }
-}
+//
+//@RestController
+//@RequestMapping("/schedule")
+//public class ScheduleController {
+//
+//    @Autowired
+//    private IScheduleService iScheduleService;
+//
+//    @PostMapping("/create")
+//    public String createSchedule(@RequestBody Schedule schedule) {
+//        return iScheduleService.createSchedule(schedule);
+//    }
+//
+//    @GetMapping("/find/{id}")
+//    public ResponseEntity<?> getScheduleById(@PathVariable Long id){
+//
+//        Schedule schedule = iScheduleService.getScheduleById(id);
+//        if (schedule != null){
+//             ScheduleDTO dto = iScheduleService.setAttributesDto(schedule);
+//             return ResponseEntity.status(200).body(dto);
+//        }
+//        return ResponseEntity.status(404).body("Schedule not found");
+//    }
+//
+//
+//    @GetMapping("/find-all/{id_dentist}")
+//    public ResponseEntity<?> getAllDentistSchedules(@PathVariable Long id_dentist){
+//
+//        List<ScheduleDTO> schedules = iScheduleService.getAllDentistSchedules(id_dentist);
+//        if (schedules != null){
+//            return ResponseEntity.status(200).body(schedules);
+//        }
+//        return ResponseEntity.status(404).body("The dentist has no schedules yet");
+//    }
+//
+//    @PutMapping("/edit")
+//    public void  editSchedule(@RequestBody Schedule schedule) {
+//        iScheduleService.editSchedule(schedule);
+//    }
+//}

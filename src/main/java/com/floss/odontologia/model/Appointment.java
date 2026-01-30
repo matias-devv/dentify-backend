@@ -15,7 +15,7 @@ import java.util.List;
 public class Appointment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_appointment;
 
     @Column(nullable = true)
@@ -64,7 +64,7 @@ public class Appointment {
 
     //many appointments -> one agenda
     @ManyToOne
-    @JoinColumn( name = "id_patient", nullable = false)
+    @JoinColumn( name = "id_agenda", nullable = false)
     private Agenda agenda;
 
 }

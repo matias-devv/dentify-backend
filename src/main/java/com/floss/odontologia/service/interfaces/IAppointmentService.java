@@ -14,22 +14,7 @@ public interface IAppointmentService {
     public String createAppo(Appointment appointment);
 
     //read
-    public AppointmentDTO getAppointmentById(Long id);
+    public Appointment getAppointmentById(Long id);
 
-    public List<AppointmentDTO> getAllAppointments();
-
-    public int getAppointmentNumberToday(Long id);
-
-    public List<LocalTime> getHoursOfDentist(LocalDate choosenDate, Long id_dentist, String SelectedDay);
-
-    public List<LocalTime> checkAppointments (LocalDate date, AppUser dentist, List<LocalTime> hours);
-
-    //update
-    public String editAppo(Appointment appointment);
-
-    //delete
-    public String deleteAppo(Long id);
-
-    public AppointmentDTO setAttributesDto(Appointment appointment);
 
 }

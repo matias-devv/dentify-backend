@@ -26,6 +26,6 @@ public class Schedule {
     private LocalTime start_time;
     private LocalTime end_time;
 
-    @OneToMany(mappedBy = "horario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Day> days;
 }

@@ -13,61 +13,23 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-//
-//@Service
-//public class AppointmentService implements IAppointmentService {
-//
-//    @Autowired
-//    private IAppointmentRepository iAppointmentRepository;
-//
-//    @Autowired
-//    private IDentistRepository iDentistRepository;
-//
-//    @Override
-//    public String createAppo(Appointment appointment) {
-//        iAppointmentRepository.save(appointment);
-//        return "The appointment was saved correctly";
-//    }
-//
-//    @Override
-//    public AppointmentDTO getAppointmentById(Long id) {
-//        Appointment appo = iAppointmentRepository.findById(id).orElse(null);
-//        return this.setAttributesDto(appo);
-//    }
-//
-//    @Override
-//    public List<AppointmentDTO> getAllAppointments() {
-//        List<Appointment> list = iAppointmentRepository.findAll();
-//        List<AppointmentDTO> listDto = new ArrayList<>();
-//
-//        for(Appointment appointment : list){
-//            AppointmentDTO dto = this.setAttributesDto(appointment);
-//            listDto.add(dto);
-//        }
-//        return listDto;
-//    }
-//
-//    @Override
-//    public int getAppointmentNumberToday(Long id) {
-//
-//        int total = 0;
-//        LocalDate today = LocalDate.now();
-//        //I find the dentist
-//        AppUser dentist = iDentistRepository.findById(id).orElse(null);
-//        //I'm bringing the dentist appointments
-//        if( dentist != null ){
-//
-//            List <Appointment> listAppo = dentist.getAppointmentList();
-//            for (Appointment appo : listAppo){
-//
-//                LocalDate dateAppo = appo.getDate();
-//                if (dateAppo.equals(today)){
-//                    total++;
-//                }
-//            }
-//        }
-//        return total;
-//    }
+
+@Service
+public class AppointmentService implements IAppointmentService {
+
+    @Autowired
+    private IAppointmentRepository iAppointmentRepository;
+
+    @Override
+    public String createAppo(Appointment appointment) {
+        iAppointmentRepository.save(appointment);
+        return "The appointment was saved correctly";
+    }
+
+    @Override
+    public Appointment getAppointmentById(Long id) {
+        return iAppointmentRepository.findById(id).orElse(null);
+    }
 //
 //    @Override
 //    public List<LocalTime> getHoursOfDentist(LocalDate choosenDate, Long id_dentist, String selectedDay) {
@@ -176,39 +138,6 @@ import java.util.List;
 //        hours.removeAll(duplicateAppointments);
 //        return hours;
 //    }
-//
-//    @Override
-//    public String editAppo(Appointment appointment) {
-//        Appointment appo = iAppointmentRepository.findById(appointment.getId_appointment()).orElse(null);
-//        if (appo != null) {
-//            iAppointmentRepository.save(appointment);
-//            return "The appointment was edited correctly";
-//        }
-//        return "The appointment does not exist";
-//    }
-//
-//    @Override
-//    public String deleteAppo(Long id) {
-//        try {
-//            iAppointmentRepository.deleteById(id);
-//            return "The appointment was deleted correctly";
-//        }catch(Exception e) {
-//            return "The appointment does not exist in the database";
-//        }
-//    }
-//
-//    @Override
-//    public AppointmentDTO setAttributesDto(Appointment appo) {
-//        AppointmentDTO dto = new AppointmentDTO();
-//        dto.setId_appointment(appo.getId_appointment());
-//        dto.setDate(appo.getDate());
-//        dto.setStartTime(appo.getStartTime());
-//        dto.setId_dentist(appo.getDentist().getId_dentist());
-//        dto.setName_dentist(appo.getDentist().getName());
-//        dto.setSurname_dentist(appo.getDentist().getSurname());
-//        dto.setId_patient(appo.getPatient().getId_patient());
-//        dto.setName_patient(appo.getPatient().getName());
-//        dto.setSurname_patient(appo.getPatient().getSurname());
-//        return dto;
-//    }
-//}
+
+
+}

@@ -17,10 +17,15 @@ public class UserService implements IUserService {
     public String createUser(UserDTO userDTO) {
 
         AppUser user = new AppUser();
+
         user.setName(userDTO.name());
+
         user.setSurname(userDTO.surname());
+
         user.setEmail(userDTO.email());
+
         userRepository.save(user);
+
         return "user created";
     }
 

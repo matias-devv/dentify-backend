@@ -20,13 +20,8 @@ public class Diagnosis {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_diagnosis;
 
-    @Column(nullable = false)
-    private String condition;
-
-    @Column(nullable = false)
+    private String health_condition;
     private LocalDate diagnosis_date;
-
-    @Column(nullable = false)
     private String treatment_type;
 
     @Column(length = 1000)

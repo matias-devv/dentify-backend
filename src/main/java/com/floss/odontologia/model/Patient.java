@@ -2,6 +2,7 @@ package com.floss.odontologia.model;
 
 import com.floss.odontologia.enums.CoverageType;
 import jakarta.persistence.*;
+import jdk.jshell.Diag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 public class Patient {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id_patient;
 
     @Column(unique = true)
@@ -32,6 +33,9 @@ public class Patient {
 
     private String phone_number;
     private String email;
+
+    @OneToMany (mappedBy = "patient")
+    private List<Diagnosis> diagnoses;
 
     @OneToMany (mappedBy = "patient")
     private List<Appointment> appointments;

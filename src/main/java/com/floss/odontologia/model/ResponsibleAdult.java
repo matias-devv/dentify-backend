@@ -13,7 +13,7 @@ import lombok.Setter;
 public class ResponsibleAdult {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.SEQUENCE)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id_responsible;
 
     @Column(unique = true)
