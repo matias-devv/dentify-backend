@@ -4,7 +4,7 @@ import com.floss.odontologia.dto.response.RoleDTO;
 import com.floss.odontologia.model.Role;
 import com.floss.odontologia.model.AuthUser;
 import com.floss.odontologia.repository.IRoleRepository;
-import com.floss.odontologia.repository.IUserRepository;
+import com.floss.odontologia.repository.IAppUserRepository;
 import com.floss.odontologia.service.interfaces.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class RoleService implements IRoleService {
     private IRoleRepository iRoleRepository;
 
     @Autowired
-    private IUserRepository iUserRepository;
+    private IAppUserRepository iUserRepository;
 
     @Override
     public Role knowRoleByUser(String username) {

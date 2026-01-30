@@ -1,21 +1,17 @@
 package com.floss.odontologia.service.impl;
 
-import com.floss.odontologia.security.config.Hashed;
 import com.floss.odontologia.dto.request.UserDTO;
 import com.floss.odontologia.model.*;
-import com.floss.odontologia.repository.IUserRepository;
+import com.floss.odontologia.repository.IAppUserRepository;
 import com.floss.odontologia.service.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserService implements IUserService {
 
     @Autowired
-    private IUserRepository userRepository;
+    private IAppUserRepository userRepository;
 
     @Override
     public String createUser(UserDTO userDTO) {
