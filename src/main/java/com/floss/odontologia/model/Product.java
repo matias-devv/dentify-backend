@@ -25,9 +25,6 @@ public class Product {
     private String name_product;
     private BigDecimal unit_price;
     private String description;
-
-    @Column(name = "duration_minutes", nullable = false)
-    private Integer duration_minutes;
     private Boolean activo;
 
 

@@ -6,8 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 @Table( name = "schedules")
@@ -26,13 +29,18 @@ public class Schedule {
     private LocalTime start_time;
     private LocalTime end_time;
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Day> days;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "schedule_days",
+            joinColumns = @JoinColumn(name = "id_schedule")
+    )
+    @Column(name = "day_of_week")
+    @Enumerated(EnumType.STRING)
+    private Set<DayOfWeek> days = new HashSet<>();
 
     //helper method for days
-    public void addDay(Day day) {
+    public void addDay(DayOfWeek day) {
         days.add(day);
-        day.setSchedule(this);
     }
 
 }

@@ -14,7 +14,7 @@ public class UserService implements IUserService {
     private IAppUserRepository userRepository;
 
     @Override
-    public String createUser(UserDTO userDTO) {
+    public String saveUser(UserDTO userDTO) {
 
         AppUser user = new AppUser();
 

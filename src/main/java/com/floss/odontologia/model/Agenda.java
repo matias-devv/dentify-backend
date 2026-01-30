@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor
@@ -37,7 +38,7 @@ public class Agenda {
 
     // 1 agenda -> n schedules
     @OneToMany ( mappedBy = "agenda", cascade = CascadeType.ALL)
-    private List<Schedule> schedules;
+    private List<Schedule> schedules = new ArrayList<>();
 
     // 1 agenda -> n appointments
     @OneToMany ( mappedBy = "agenda")

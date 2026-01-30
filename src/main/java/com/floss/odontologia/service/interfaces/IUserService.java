@@ -7,7 +7,7 @@ import com.floss.odontologia.model.AuthUser;
 public interface IUserService {
 
         //create
-        public String createUser(UserDTO userDTO);
+        public String saveUser(UserDTO userDTO);
 
         public AppUser getUserEntityById(Long id);
 

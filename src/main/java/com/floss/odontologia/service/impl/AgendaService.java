@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,12 @@ public class AgendaService implements IAgendaService {
         //create agenda
         Agenda agenda = this.setAttributesNewAgenda(request);
 
+        if ( request.idProduct() != null){
+            Product product = productService.getProductEntityById(request.idProduct());
+            if ( product != null){
+                agenda.setProduct(product);
+            }
+        }
         agenda.setApp_user(user);
 
         //add schedules
@@ -58,13 +65,9 @@ public class AgendaService implements IAgendaService {
             newSchedule.setEnd_time(schedule.getEnd_time());
 
             //add days
-            schedule.getDays().forEach(dayWeek-> {
-                Day day = new Day();
-                day.setDayOfWeek( dayWeek.getDayOfWeek());
-                schedule.addDay(day);
-            });
+            newSchedule.setDays(new HashSet<>( schedule.getDays()));
 
-            agenda.addSchedule(schedule);
+            agenda.addSchedule(newSchedule);
         });
 
         Agenda savedAgenda = agendaRepository.save(agenda);
@@ -80,74 +83,74 @@ public class AgendaService implements IAgendaService {
         agenda.setFinal_date(agendaRequestDTO.finalDate());
         return agenda;
     }
-
-    @Override
-    public List<AgendaResponseDTO> findAgendasByUser(Long idUserApp) {
-
-        List<Agenda> listAgenda = agendaRepository.findAll();
-        List<AgendaResponseDTO> listAgendaResponseDTO = new ArrayList<>();
-
-        if (listAgenda != null) {
-            for (Agenda agenda : listAgenda) {
-
-                if (agenda.getApp_user().getId_app_user() == idUserApp) {
-
-                    AgendaResponseDTO dto = this.convertEntityToDto(agenda);
-                    listAgendaResponseDTO.add(dto);
-                }
-            }
-        }
-        return listAgendaResponseDTO;
-    }
-
-    @Override
-    public Optional<AgendaResponseDTO> findAgendaById(Long idAgenda) {
-        Agenda agenda = agendaRepository.findById(idAgenda).orElse(null);
-        if (agenda == null) {
-            return null;
-        }
-        return Optional.of(this.convertEntityToDto(agenda));
-    }
-
-    @Override
-    public String patchStatusAgenda(AgendaRequestDTO agendaRequestDTO) {
-        Agenda agenda = agendaRepository.findById(agendaRequestDTO.id_agenda()).orElse(null);
-
-        if (agenda != null) {
-            agenda.setActive(agendaRequestDTO.active());
-            agendaRepository.save(agenda);
-            return "The status of the agenda was successfully saved";
-        }
-        return "The agenda with this id: " + agendaRequestDTO.id_agenda() + "was not found";
-    }
-
-    @Override
-    public String editAgenda(AgendaRequestDTO agendaRequestDTO) {
-
-        Agenda agenda = agendaRepository.findById(agendaRequestDTO.id_agenda()).orElse(null);
-        if (agenda != null) {
-
-            agenda.setAgenda_name(agendaRequestDTO.agendaName());
-            agenda.setStart_date(agendaRequestDTO.startDate());
-            agenda.setFinal_date(agendaRequestDTO.finalDate());
-            agenda.setActive(agendaRequestDTO.active());
-            agenda.setSchedules(agendaRequestDTO.schedules());
-
-            if (agendaRequestDTO.idProduct() != null) {
-                Product product = productService.validateIfProductExists(agendaRequestDTO.idUserApp());
-
-                if (product != null) {
-                    agenda.setProduct(product);
-                }
-            }
-//            List<Schedule> removeList = new ArrayList<>();
 //
-//            //recorro lista de schedules del agendaRequestDTO
-//            for (Schedule schedule : agendaRequestDTO.schedules()) {
+//    @Override
+//    public List<AgendaResponseDTO> findAgendasByUser(Long idUserApp) {
 //
-//                for (Schedule oldSchedule : agenda.getSchedules()) {
+//        List<Agenda> listAgenda = agendaRepository.findAll();
+//        List<AgendaResponseDTO> listAgendaResponseDTO = new ArrayList<>();
 //
-//                    if (schedule.getId_schedule() != oldSchedule.getId_schedule()) {
+//        if (listAgenda != null) {
+//            for (Agenda agenda : listAgenda) {
+//
+//                if (agenda.getApp_user().getId_app_user() == idUserApp) {
+//
+//                    AgendaResponseDTO dto = this.convertEntityToDto(agenda);
+//                    listAgendaResponseDTO.add(dto);
+//                }
+//            }
+//        }
+//        return listAgendaResponseDTO;
+//    }
+//
+//    @Override
+//    public Optional<AgendaResponseDTO> findAgendaById(Long idAgenda) {
+//        Agenda agenda = agendaRepository.findById(idAgenda).orElse(null);
+//        if (agenda == null) {
+//            return null;
+//        }
+//        return Optional.of(this.convertEntityToDto(agenda));
+//    }
+//
+//    @Override
+//    public String patchStatusAgenda(AgendaRequestDTO agendaRequestDTO) {
+//        Agenda agenda = agendaRepository.findById(agendaRequestDTO.id_agenda()).orElse(null);
+//
+//        if (agenda != null) {
+//            agenda.setActive(agendaRequestDTO.active());
+//            agendaRepository.save(agenda);
+//            return "The status of the agenda was successfully saved";
+//        }
+//        return "The agenda with this id: " + agendaRequestDTO.id_agenda() + "was not found";
+//    }
+//
+//    @Override
+//    public String editAgenda(AgendaRequestDTO agendaRequestDTO) {
+//
+//        Agenda agenda = agendaRepository.findById(agendaRequestDTO.id_agenda()).orElse(null);
+//        if (agenda != null) {
+//
+//            agenda.setAgenda_name(agendaRequestDTO.agendaName());
+//            agenda.setStart_date(agendaRequestDTO.startDate());
+//            agenda.setFinal_date(agendaRequestDTO.finalDate());
+//            agenda.setActive(agendaRequestDTO.active());
+//            agenda.setSchedules(agendaRequestDTO.schedules());
+//
+//            if (agendaRequestDTO.idProduct() != null) {
+//                Product product = productService.validateIfProductExists(agendaRequestDTO.idUserApp());
+//
+//                if (product != null) {
+//                    agenda.setProduct(product);
+//                }
+//            }
+////            List<Schedule> removeList = new ArrayList<>();
+////
+////            //recorro lista de schedules del agendaRequestDTO
+////            for (Schedule schedule : agendaRequestDTO.schedules()) {
+////
+////                for (Schedule oldSchedule : agenda.getSchedules()) {
+////
+////                    if (schedule.getId_schedule() != oldSchedule.getId_schedule()) {
 //                        removeList.add(oldSchedule);
 //                    }
 ////                if (schedule.getId_schedule() == oldSchedule.getId_schedule()) {
@@ -164,67 +167,67 @@ public class AgendaService implements IAgendaService {
 //            if (!removeList.isEmpty()) {
 //                agenda.getSchedules().removeAll(removeList);
 //            }
-
-            agendaRepository.save(agenda);
-            return agenda.getAgenda_name() + "successfully updated";
-        }
-        return "the agenda does not exists";
-    }
-
-    @Override
-    public @Nullable FullDailyResponseDTO getAllSlotsInDay( DayRequestDTO request) {
-
-        Optional<Agenda> agenda = agendaRepository.findById(request.id_agenda());
-
-        if (agenda.isEmpty()) {
-            return null;
-        }
-
-        List<Schedule> agendaSchedules = agenda.get().getSchedules();
-        List<Appointment> appointments = agenda.get().getAppointments();
-
-        List<EventDetailResponseDTO> slots = new ArrayList<>();
-        Integer occupiedSlots = 0;
-        Integer freeSlots = 0;
-        Integer totalSlots = 0;
-
-        boolean okDateRangeAgenda = CheckDayDateInAgenda(agenda.get(),
-                                                         request.date());
-        if (okDateRangeAgenda == false) {
-            return null;
-        }
-
-        for (Schedule schedule : agendaSchedules) {
-
-            List<Day> listDays = schedule.getDays();
-
-            for ( Day day : listDays ) {
-
-                    if( day.getDayOfWeek().equals( request.date().getDayOfWeek() ) ) {
-
-                        if ( appointments != null && !appointments.isEmpty() ){
-
-                            for (Appointment appointment : appointments) {
-
-                                if (appointment.getDate().equals( request.date() )) {
-
-                                    slots.add( this.convertToBusyEventDetailDTO( request.date(), schedule, appointment));
-                                    occupiedSlots++;
-                                }
-                            }
-                        }
-                        freeSlots++;
-                        slots.add( this.convertToEventDetailFreeDTO( request.date(), schedule) );
-                    }
-                }
-        }
-
-        totalSlots = freeSlots + occupiedSlots;
-
-        FastRecap dayRecap = this.createFastRecap(totalSlots, freeSlots, occupiedSlots);
-
-        return this.convertToFullDailyResponseDTO( agenda.get(), request.date(), dayRecap, slots);
-    }
+//
+//            agendaRepository.save(agenda);
+//            return agenda.getAgenda_name() + "successfully updated";
+//        }
+//        return "the agenda does not exists";
+//    }
+//
+//    @Override
+//    public @Nullable FullDailyResponseDTO getAllSlotsInDay( DayRequestDTO request) {
+//
+//        Optional<Agenda> agenda = agendaRepository.findById(request.id_agenda());
+//
+//        if (agenda.isEmpty()) {
+//            return null;
+//        }
+//
+//        List<Schedule> agendaSchedules = agenda.get().getSchedules();
+//        List<Appointment> appointments = agenda.get().getAppointments();
+//
+//        List<EventDetailResponseDTO> slots = new ArrayList<>();
+//        Integer occupiedSlots = 0;
+//        Integer freeSlots = 0;
+//        Integer totalSlots = 0;
+//
+//        boolean okDateRangeAgenda = CheckDayDateInAgenda(agenda.get(),
+//                                                         request.date());
+//        if (okDateRangeAgenda == false) {
+//            return null;
+//        }
+//
+//        for (Schedule schedule : agendaSchedules) {
+//
+//            List<Day> listDays = schedule.getDays();
+//
+//            for ( Day day : listDays ) {
+//
+//                    if( day.getDayOfWeek().equals( request.date().getDayOfWeek() ) ) {
+//
+//                        if ( appointments != null && !appointments.isEmpty() ){
+//
+//                            for (Appointment appointment : appointments) {
+//
+//                                if (appointment.getDate().equals( request.date() )) {
+//
+//                                    slots.add( this.convertToBusyEventDetailDTO( request.date(), schedule, appointment));
+//                                    occupiedSlots++;
+//                                }
+//                            }
+//                        }
+//                        freeSlots++;
+//                        slots.add( this.convertToEventDetailFreeDTO( request.date(), schedule) );
+//                    }
+//                }
+//        }
+//
+//        totalSlots = freeSlots + occupiedSlots;
+//
+//        FastRecap dayRecap = this.createFastRecap(totalSlots, freeSlots, occupiedSlots);
+//
+//        return this.convertToFullDailyResponseDTO( agenda.get(), request.date(), dayRecap, slots);
+//    }
 
     private EventDetailResponseDTO convertToBusyEventDetailDTO(LocalDate date, Schedule schedule, Appointment appointment) {
         return new EventDetailResponseDTO("slot " + date.toString() + schedule.getStart_time().toString(),
@@ -273,126 +276,126 @@ public class AgendaService implements IAgendaService {
     private boolean CheckDayDateInAgenda(Agenda agenda, LocalDate requestDate) {
         return agenda.getStart_date().isBefore(requestDate) && agenda.getFinal_date().isAfter(requestDate);
     }
-
-    @Override
-    public @Nullable WeekSummaryResponseDTO getAvailableSlotsInWeek(WeekDateRangeRequestDTO weekDateRange) {
-
-        Optional<Agenda> agenda = agendaRepository.findById(weekDateRange.id_agenda());
-
-        if (agenda.isEmpty()) {
-            return null;
-        }
-        List<Schedule> agendaSchedules = agenda.get().getSchedules();
-        List<Appointment> appointments = agenda.get().getAppointments();
-        List<EventResponseDTO> eventList = new ArrayList<>();
-
-        boolean okDateRangeAgenda = CheckDateRangeAgenda(agenda.get(),
-                                                         weekDateRange.startDate(),
-                                                         weekDateRange.endDate());
-
-        if (okDateRangeAgenda == false) {
-            return null;
-        }
-
-        LocalDate startDate = weekDateRange.startDate();
-
-        List<LocalDate> dates = startDate.datesUntil( weekDateRange.endDate() ).toList();
-
-        //filtramos por dia semana
-        //necesito convertir datos del schedule en 1 evento
-        //necesito verificar que no este ocupado
-        //si esta ocupado lo tengo que traer al paciente, marcar el id del turno
-        for (Schedule schedule : agendaSchedules) {
-
-            List<Day> listDays = schedule.getDays();
-
-            for (LocalDate date : dates) {
-
-                for ( Day day : listDays ) {
-
-                    if( day.getDayOfWeek().equals( date.getDayOfWeek() ) ) {
-
-                        if ( appointments != null && !appointments.isEmpty() ){
-
-                            for (Appointment appointment : appointments) {
-
-                                if (appointment.getDate().equals(date)) {
-
-                                    eventList.add(this.convertToBusyEventDTO(date, schedule, appointment));
-                                }
-                            }
-                        }
-                        eventList.add( this.convertToEventFreeDTO(date, schedule) );
-                    }
-                }
-            }
-        }
-        return this.convertToWeekResponseDTO(agenda.get(), eventList);
-
-    }
-
-    @Override
-    public @Nullable MonthSummaryResponseDTO getSummaryOfTheMonth(MonthDateRangeRequestDTO request) {
-
-        Optional<Agenda> agenda = agendaRepository.findById( request.id_agenda());
-
-        if (agenda.isEmpty()) {
-            return null;
-        }
-        List<Schedule> agendaSchedules = agenda.get().getSchedules();
-        List<Appointment> appointments = agenda.get().getAppointments();
-        //aux list
-        List<DailySummaryDTO> summaryList = new ArrayList<>();
-
-
-        boolean okDateRangeAgenda = CheckDateRangeAgenda(agenda.get(),
-                request.start_date(),
-                request.final_date());
-
-        if (!okDateRangeAgenda) {
-            return null;
-        }
-
-        List<LocalDate> dates = request.start_date().datesUntil( request.final_date() ).toList();
-
-        for (Schedule schedule : agendaSchedules) {
-
-            Integer occupiedSlots = 0;
-            Integer freeSlots = 0;
-            Integer totalSlots = 0;
-
-            List<Day> listDays = schedule.getDays();
-
-            for (LocalDate date : dates) {
-
-                for ( Day day : listDays ) {
-
-                    if( day.getDayOfWeek().equals( date.getDayOfWeek() ) ) {
-
-                        if (appointments != null && !appointments.isEmpty()) {
-
-                            for (Appointment appointment : appointments) {
-
-                                if (appointment.getDate().equals(date)) {
-                                    occupiedSlots++;
-                                }
-                            }
-                        }
-                        freeSlots++;
-                    }
-                }
-
-                totalSlots = freeSlots + occupiedSlots;
-
-                AvailabilityState state = this.calculateAvailabilityState(freeSlots, totalSlots);
-
-                summaryList.add( this.createDailySummaryDTO(date, freeSlots, occupiedSlots, totalSlots, state ));
-
-            }
-        }
-        return this.convertToMonthSumaryResponseDTO(agenda.get(), request, summaryList);
-
-    }
+//
+//    @Override
+//    public @Nullable WeekSummaryResponseDTO getAvailableSlotsInWeek(WeekDateRangeRequestDTO weekDateRange) {
+//
+//        Optional<Agenda> agenda = agendaRepository.findById(weekDateRange.id_agenda());
+//
+//        if (agenda.isEmpty()) {
+//            return null;
+//        }
+//        List<Schedule> agendaSchedules = agenda.get().getSchedules();
+//        List<Appointment> appointments = agenda.get().getAppointments();
+//        List<EventResponseDTO> eventList = new ArrayList<>();
+//
+//        boolean okDateRangeAgenda = CheckDateRangeAgenda(agenda.get(),
+//                                                         weekDateRange.startDate(),
+//                                                         weekDateRange.endDate());
+//
+//        if (okDateRangeAgenda == false) {
+//            return null;
+//        }
+//
+//        LocalDate startDate = weekDateRange.startDate();
+//
+//        List<LocalDate> dates = startDate.datesUntil( weekDateRange.endDate() ).toList();
+//
+//        //filtramos por dia semana
+//        //necesito convertir datos del schedule en 1 evento
+//        //necesito verificar que no este ocupado
+//        //si esta ocupado lo tengo que traer al paciente, marcar el id del turno
+//        for (Schedule schedule : agendaSchedules) {
+//
+//            List<Day> listDays = schedule.getDays();
+//
+//            for (LocalDate date : dates) {
+//
+//                for ( Day day : listDays ) {
+//
+//                    if( day.getDayOfWeek().equals( date.getDayOfWeek() ) ) {
+//
+//                        if ( appointments != null && !appointments.isEmpty() ){
+//
+//                            for (Appointment appointment : appointments) {
+//
+//                                if (appointment.getDate().equals(date)) {
+//
+//                                    eventList.add(this.convertToBusyEventDTO(date, schedule, appointment));
+//                                }
+//                            }
+//                        }
+//                        eventList.add( this.convertToEventFreeDTO(date, schedule) );
+//                    }
+//                }
+//            }
+//        }
+//        return this.convertToWeekResponseDTO(agenda.get(), eventList);
+//
+//    }
+//
+//    @Override
+//    public @Nullable MonthSummaryResponseDTO getSummaryOfTheMonth(MonthDateRangeRequestDTO request) {
+//
+//        Optional<Agenda> agenda = agendaRepository.findById( request.id_agenda());
+//
+//        if (agenda.isEmpty()) {
+//            return null;
+//        }
+//        List<Schedule> agendaSchedules = agenda.get().getSchedules();
+//        List<Appointment> appointments = agenda.get().getAppointments();
+//        //aux list
+//        List<DailySummaryDTO> summaryList = new ArrayList<>();
+//
+//
+//        boolean okDateRangeAgenda = CheckDateRangeAgenda(agenda.get(),
+//                request.start_date(),
+//                request.final_date());
+//
+//        if (!okDateRangeAgenda) {
+//            return null;
+//        }
+//
+//        List<LocalDate> dates = request.start_date().datesUntil( request.final_date() ).toList();
+//
+//        for (Schedule schedule : agendaSchedules) {
+//
+//            Integer occupiedSlots = 0;
+//            Integer freeSlots = 0;
+//            Integer totalSlots = 0;
+//
+//            List<Day> listDays = schedule.getDays();
+//
+//            for (LocalDate date : dates) {
+//
+//                for ( Day day : listDays ) {
+//
+//                    if( day.getDayOfWeek().equals( date.getDayOfWeek() ) ) {
+//
+//                        if (appointments != null && !appointments.isEmpty()) {
+//
+//                            for (Appointment appointment : appointments) {
+//
+//                                if (appointment.getDate().equals(date)) {
+//                                    occupiedSlots++;
+//                                }
+//                            }
+//                        }
+//                        freeSlots++;
+//                    }
+//                }
+//
+//                totalSlots = freeSlots + occupiedSlots;
+//
+//                AvailabilityState state = this.calculateAvailabilityState(freeSlots, totalSlots);
+//
+//                summaryList.add( this.createDailySummaryDTO(date, freeSlots, occupiedSlots, totalSlots, state ));
+//
+//            }
+//        }
+//        return this.convertToMonthSumaryResponseDTO(agenda.get(), request, summaryList);
+//
+//    }
 
     private AvailabilityState calculateAvailabilityState( Integer freeSlots, Integer totalSlots) {
 

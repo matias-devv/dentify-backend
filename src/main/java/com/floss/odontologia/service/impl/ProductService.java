@@ -38,7 +38,6 @@ public class ProductService implements IProductService {
         product.setName_product(request.name_product());
         product.setUnit_price(request.unit_price());
         product.setDescription(request.description());
-        product.setDuration_minutes(request.duration_minutes());
         product.setActivo(request.activo());
         return product;
     }
