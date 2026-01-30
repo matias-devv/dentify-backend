@@ -35,34 +35,50 @@ public class AgendaService implements IAgendaService {
     private IProductService productService;
 
     @Override
-    public String save(AgendaRequestDTO agendaRequestDTO) {
+    public String save(AgendaRequestDTO request) {
 
+        //get user
+        AppUser user = userService.getUserEntityById(request.idUserApp());
+
+        if ( user == null){
+            throw new RuntimeException("The user was not found");
+        }
+
+        //create agenda
+        Agenda agenda = this.setAttributesNewAgenda(request);
+
+        agenda.setApp_user(user);
+
+        //add schedules
+        request.schedules().forEach(schedule -> {
+
+            Schedule newSchedule = new Schedule();
+            newSchedule.setDuration_minutes(schedule.getDuration_minutes());
+            newSchedule.setStart_time(schedule.getStart_time());
+            newSchedule.setEnd_time(schedule.getEnd_time());
+
+            //add days
+            schedule.getDays().forEach(dayWeek-> {
+                Day day = new Day();
+                day.setDayOfWeek( dayWeek.getDayOfWeek());
+                schedule.addDay(day);
+            });
+
+            agenda.addSchedule(schedule);
+        });
+
+        Agenda savedAgenda = agendaRepository.save(agenda);
+
+        return "The agenda was saved successfully";
+    }
+
+    private Agenda setAttributesNewAgenda(AgendaRequestDTO agendaRequestDTO) {
         Agenda agenda = new Agenda();
-
-        //buscar usuario
-        AppUser appUser = userService.validateIfUserExists(agendaRequestDTO.idUserApp());
-
-        if (appUser == null) {
-            return "The user does not exist";
-        }
-        if (agendaRequestDTO.idProduct() != null) {
-            //buscar producto
-            Product product = productService.validateIfProductExists(agendaRequestDTO.idUserApp());
-
-            if (product == null) {
-                return "The product does not exist";
-            }
-            agenda.setProduct(product);
-        }
-
-        agenda.setApp_user(appUser);
-
-        agenda = convertDtoToEntity(agenda, agendaRequestDTO);
-
-        agendaRepository.save(agenda);
-
-        return "the agenda was successfully saved";
-
+        agenda.setAgenda_name(agendaRequestDTO.agendaName());
+        agenda.setActive(agendaRequestDTO.active());
+        agenda.setStart_date(agendaRequestDTO.startDate());
+        agenda.setFinal_date(agendaRequestDTO.finalDate());
+        return agenda;
     }
 
     @Override

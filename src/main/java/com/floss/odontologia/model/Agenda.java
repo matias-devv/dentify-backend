@@ -42,4 +42,15 @@ public class Agenda {
     // 1 agenda -> n appointments
     @OneToMany ( mappedBy = "agenda")
     private List<Appointment> appointments;
+
+    //helper method para bidirectional sync
+    public void addSchedule(Schedule schedule) {
+        schedules.add(schedule);
+        schedule.setAgenda(this);
+    }
+
+    public void removeHorario(Schedule schedule) {
+        schedules.remove(schedule);
+        schedule.setAgenda(null);
+    }
 }

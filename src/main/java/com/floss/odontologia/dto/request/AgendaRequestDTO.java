@@ -2,6 +2,7 @@ package com.floss.odontologia.dto.request;
 
 import com.floss.odontologia.model.Schedule;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Null;
 
 import java.time.LocalDate;
 import java.util.List;

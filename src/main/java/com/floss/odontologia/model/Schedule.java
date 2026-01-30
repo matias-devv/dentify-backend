@@ -28,4 +28,11 @@ public class Schedule {
 
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Day> days;
+
+    //helper method for days
+    public void addDay(Day day) {
+        days.add(day);
+        day.setSchedule(this);
+    }
+
 }

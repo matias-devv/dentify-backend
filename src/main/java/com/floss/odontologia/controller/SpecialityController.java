@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/speciality")
+@RequestMapping("/api/specialities")
 public class SpecialityController {
 
     @Autowired
     private ISpecialityService iSpecialityService;
 
-    @PostMapping("/find/{name}")
+    @PostMapping("/save")
     public ResponseEntity<String> saveSpeciality(@RequestBody SpecialityDTO request) {
         return ResponseEntity.status(200).body( iSpecialityService.saveSpeciality(request) );
     }

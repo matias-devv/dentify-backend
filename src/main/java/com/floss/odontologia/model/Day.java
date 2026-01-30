@@ -15,7 +15,7 @@ public class Day {
     @Id @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id_day;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_schedule", nullable = false)
     private Schedule schedule;
 
