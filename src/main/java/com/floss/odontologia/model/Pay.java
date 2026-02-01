@@ -30,6 +30,10 @@ public class Pay {
     @Column(nullable = true)
     private LocalDate payment_date;
 
+    private Integer total_installments;
+    private Integer pay_installments;
+    private Integer next_installment_date;
+
     @OneToOne ( mappedBy = "pay")
     private PaymentReceipt payment_receipt;
 

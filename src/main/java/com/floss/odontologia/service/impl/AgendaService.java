@@ -17,6 +17,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,6 +46,12 @@ public class AgendaService implements IAgendaService {
             throw new RuntimeException("The user was not found");
         }
 
+        this.validateDates(request);
+
+        this.validateName(request);
+
+        this.validateNullSchedules(request);
+
         //create agenda
         Agenda agenda = this.setAttributesNewAgenda(request);
 
@@ -59,13 +66,9 @@ public class AgendaService implements IAgendaService {
         //add schedules
         request.schedules().forEach(schedule -> {
 
-            Schedule newSchedule = new Schedule();
-            newSchedule.setDuration_minutes(schedule.getDuration_minutes());
-            newSchedule.setStart_time(schedule.getStart_time());
-            newSchedule.setEnd_time(schedule.getEnd_time());
+            this.validateSchedules(schedule);
 
-            //add days
-            newSchedule.setDays(new HashSet<>( schedule.getDays()));
+            Schedule newSchedule = this.setAttributesNewSchedule(schedule);
 
             agenda.addSchedule(newSchedule);
         });
@@ -73,6 +76,65 @@ public class AgendaService implements IAgendaService {
         Agenda savedAgenda = agendaRepository.save(agenda);
 
         return "The agenda was saved successfully";
+    }
+
+    private void validateSchedules(Schedule schedule) {
+
+        if (schedule.getDuration_minutes() < 15) {
+            throw new RuntimeException("Minimum block duration is 15 minutes");
+        }
+        if (schedule.getDuration_minutes() > 480) {
+            throw new RuntimeException("Maximum block duration is 8 hours");
+        }
+        if (schedule.getDays() == null || schedule.getDays().isEmpty()) {
+            throw new RuntimeException("Schedule must have at least one day selected");
+        }
+
+        long totalMinutes = Duration.between( schedule.getStart_time(), schedule.getEnd_time() ).toMinutes();
+
+        if (totalMinutes < schedule.getDuration_minutes()) {
+            throw new RuntimeException("Time range is shorter than block duration");
+        }
+    }
+
+    private void validateNullSchedules(AgendaRequestDTO request) {
+        if ( request.schedules() == null || request.schedules().isEmpty() ){
+            throw new RuntimeException("The schedules are mandatory");
+        }
+    }
+
+    private void validateName(AgendaRequestDTO request) {
+        if( request.agendaName() == null || request.agendaName().isEmpty() ){
+            throw new RuntimeException("the agenda name cannot be empty");
+        }
+        if( request.agendaName().length() < 3){
+            throw new RuntimeException("the agenda name is too short");
+        }
+        if( request.agendaName().length() > 30 ){
+            throw new RuntimeException("the agenda name is too long");
+        }
+    }
+
+    private void validateDates(AgendaRequestDTO request) {
+        if ( request.startDate().isBefore(LocalDate.now()) ){
+            throw new RuntimeException("the date cannot be before the current date");
+        }
+        if ( request.finalDate().isBefore(request.startDate())){
+            throw new RuntimeException("the start date cannot be before the final date");
+        }
+    }
+
+    private Schedule setAttributesNewSchedule(Schedule schedule) {
+
+        Schedule newSchedule = new Schedule();
+        newSchedule.setDuration_minutes(schedule.getDuration_minutes());
+        newSchedule.setStart_time(schedule.getStart_time());
+        newSchedule.setEnd_time(schedule.getEnd_time());
+
+        //add days
+        newSchedule.setDays(new HashSet<>( schedule.getDays()));
+
+        return newSchedule;
     }
 
     private Agenda setAttributesNewAgenda(AgendaRequestDTO agendaRequestDTO) {
