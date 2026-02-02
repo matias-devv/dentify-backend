@@ -1,9 +1,7 @@
 package com.floss.odontologia.service.impl;
 
-import com.floss.odontologia.dto.request.AgendaRequestDTO;
-import com.floss.odontologia.dto.request.DayRequestDTO;
-import com.floss.odontologia.dto.request.MonthDateRangeRequestDTO;
-import com.floss.odontologia.dto.request.WeekDateRangeRequestDTO;
+import com.floss.odontologia.dto.request.calendar.AgendaRequestDTO;
+import com.floss.odontologia.dto.request.calendar.MonthDateRangeRequestDTO;
 import com.floss.odontologia.dto.response.calendar.*;
 import com.floss.odontologia.dto.response.AppointmentResponseDTO;
 import com.floss.odontologia.enums.AvailabilityState;
@@ -19,10 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AgendaService implements IAgendaService {

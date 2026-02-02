@@ -9,5 +9,4 @@ import java.util.List;
 
 @Repository
 public interface IPayRepository extends JpaRepository<Pay, Long> {
-    List<Pay> findByPaymentMethodAndTotalInstallmentsGreaterThan(PaymentMethod method, Integer minimumInstallments);
 }

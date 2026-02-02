@@ -2,17 +2,15 @@ package com.floss.odontologia.model;
 
 import com.floss.odontologia.enums.TreatmentStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity @AllArgsConstructor @NoArgsConstructor @Getter
-@Setter @Table ( name = "treatments")
+@Setter @Table ( name = "treatments") @Builder
 public class Treatment {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,9 +32,9 @@ public class Treatment {
     private TreatmentStatus treatment_status = TreatmentStatus.CREATED;
 
     @Column(nullable = false)
-    private LocalDate start_date;
+    private LocalDateTime start_date;
 
-    private LocalDate final_date;
+    private LocalDateTime final_date;
 
     //n treatments -> one app_user
     @ManyToOne ( fetch = FetchType.LAZY)

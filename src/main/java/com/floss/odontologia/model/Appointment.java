@@ -2,16 +2,13 @@ package com.floss.odontologia.model;
 
 import com.floss.odontologia.enums.AppointmentStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor @Table ( name = "appointments")
+@Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor @Table ( name = "appointments") @Builder
 public class Appointment {
 
     @Id

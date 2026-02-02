@@ -1,17 +1,6 @@
 package com.floss.odontologia.service.interfaces;
 
-import com.floss.odontologia.dto.request.AgendaRequestDTO;
-import com.floss.odontologia.dto.request.MonthDateRangeRequestDTO;
-import com.floss.odontologia.dto.request.WeekDateRangeRequestDTO;
-import com.floss.odontologia.dto.response.calendar.AgendaResponseDTO;
-import com.floss.odontologia.dto.response.calendar.FullDailyResponseDTO;
-import com.floss.odontologia.dto.response.calendar.MonthSummaryResponseDTO;
-import com.floss.odontologia.dto.response.calendar.WeekSummaryResponseDTO;
-import com.floss.odontologia.dto.request.DayRequestDTO;
-import org.jspecify.annotations.Nullable;
-
-import java.util.List;
-import java.util.Optional;
+import com.floss.odontologia.dto.request.calendar.AgendaRequestDTO;
 
 public interface IAgendaService {
 

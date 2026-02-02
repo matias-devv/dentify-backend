@@ -1,34 +1,108 @@
 package com.floss.odontologia.service.impl;
 
+import com.floss.odontologia.dto.request.Appointment.createAppointmentRequestDTO;
+import com.floss.odontologia.dto.response.Appointment.createAppointmentResponseDTO;
 import com.floss.odontologia.dto.response.AppointmentDTO;
-import com.floss.odontologia.model.Appointment;
-import com.floss.odontologia.model.AppUser;
-import com.floss.odontologia.model.Schedule;
-import com.floss.odontologia.repository.IAppointmentRepository;
+import com.floss.odontologia.enums.AppointmentStatus;
+import com.floss.odontologia.enums.PaymentMethod;
+import com.floss.odontologia.enums.PaymentStatus;
+import com.floss.odontologia.enums.TreatmentStatus;
+import com.floss.odontologia.model.*;
+import com.floss.odontologia.repository.*;
 import com.floss.odontologia.service.interfaces.IAppointmentService;
+import com.floss.odontologia.service.interfaces.IPatientService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class AppointmentService implements IAppointmentService {
 
-    @Autowired
-    private IAppointmentRepository iAppointmentRepository;
-
-    @Override
-    public String createAppo(Appointment appointment) {
-        iAppointmentRepository.save(appointment);
-        return "The appointment was saved correctly";
-    }
+    private final IAppointmentRepository appointmentRepository;
+    private final ITreatmentRepository treatmentRepository;
+    private final IPatientRepository patientRepository;
+    private final IProductRepository productRepository;
+    private final IPayRepository payRepository;
+    private final MercadoPagoService mercadoPagoService;
 
     @Override
     public Appointment getAppointmentById(Long id) {
-        return iAppointmentRepository.findById(id).orElse(null);
+        return appointmentRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public createAppointmentResponseDTO createAppointmentWithPay(createAppointmentRequestDTO request) {
+
+        //validate patient and product
+        Patient patient = patientRepository.findById( request.id_patient() )
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+
+        Product product = productRepository.findById( request.id_product() )
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        //create or find the active treatment
+        Treatment treatment = Treatment.builder()
+                .patient(patient)
+                .product(product)
+                .base_price(product.getUnit_price())
+                .discount(BigDecimal.ZERO)
+                .final_price(product.getUnit_price())
+                .outstanding_balance( product.getUnit_price()) //call method to calculate this
+                .treatment_status(TreatmentStatus.CREATED)
+                .start_date(LocalDateTime.now())
+                .build();
+
+        treatmentRepository.save(treatment);
+
+        //create appointment
+        Appointment appointment = Appointment.builder()
+                .patient( patient)
+                .treatment( treatment)
+                .date( request.date() )
+                .startTime( request.start_time() )
+                .duration_minutes( request.duration_minutes() )
+                .appointmentStatus( AppointmentStatus.SCHEDULED )
+                .build();
+
+        appointmentRepository.save(appointment);
+
+        //create pay
+        Pay pay = Pay.builder()
+                .treatment( treatment)
+                .appointment( appointment)
+                .amount( product.getUnit_price() )
+                .payment_method( request.paymentMethod() )
+                .payment_status( PaymentStatus.PENDING)
+                .date_generation( LocalDateTime.now())
+                .build();
+
+        payRepository.save(pay);
+
+        //If MercadoPago is present -> generate link
+
+        String payLink = null;
+        if (request.paymentMethod() == PaymentMethod.MERCADO_PAGO) {
+            payLink = mercadoPagoService.createPaymentPreference(pay);
+            log.info("payment link generated: {}", payLink);
+        }
+
+        return createAppointmentResponseDTO.builder()
+                .id_appointment( appointment.getId_appointment())
+                .id_treatment( treatment.getId_treatment())
+                .id_pay( pay.getId_pay())
+                .pay_link( payLink)
+                .appointment_status( appointment.getAppointmentStatus())
+                .build();
     }
 //
 //    @Override

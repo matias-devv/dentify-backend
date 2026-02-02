@@ -3,16 +3,14 @@ package com.floss.odontologia.model;
 import com.floss.odontologia.enums.PaymentMethod;
 import com.floss.odontologia.enums.PaymentStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor @Table ( name = "pays")
+@Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor @Table ( name = "pays") @Builder
 public class Pay {
 
     @Id @GeneratedValue ( strategy = GenerationType.IDENTITY)
@@ -26,9 +24,7 @@ public class Pay {
     @Enumerated ( EnumType.STRING)
     private PaymentStatus payment_status = PaymentStatus.PENDING;
 
-    private LocalDate date_generation;
-    @Column(nullable = true)
-    private LocalDate payment_date;
+    private LocalDateTime date_generation;
 
     private Integer total_installments;
     private Integer pay_installments = 0;

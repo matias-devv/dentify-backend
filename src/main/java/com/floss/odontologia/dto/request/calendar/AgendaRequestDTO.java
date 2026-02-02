@@ -1,4 +1,4 @@
-package com.floss.odontologia.dto.request;
+package com.floss.odontologia.dto.request.calendar;
 
 import com.floss.odontologia.model.Schedule;
 import jakarta.validation.constraints.NotBlank;

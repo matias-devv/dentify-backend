@@ -1,4 +1,4 @@
-package com.floss.odontologia.dto.request;
+package com.floss.odontologia.dto.request.calendar;
 
 import java.time.LocalDate;
 

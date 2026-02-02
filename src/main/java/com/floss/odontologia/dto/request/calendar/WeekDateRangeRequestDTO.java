@@ -1,4 +1,4 @@
-package com.floss.odontologia.dto.request;
+package com.floss.odontologia.dto.request.calendar;
 
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;

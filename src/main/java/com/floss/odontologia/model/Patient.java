@@ -3,10 +3,7 @@ package com.floss.odontologia.model;
 import com.floss.odontologia.enums.CoverageType;
 import jakarta.persistence.*;
 import jdk.jshell.Diag;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
