@@ -1,5 +1,6 @@
 package com.floss.odontologia.service.interfaces;
 
+import com.floss.odontologia.dto.request.patient.CreatePatientRequestDTO;
 import com.floss.odontologia.dto.response.PatientDTO;
 import com.floss.odontologia.model.Patient;
 
@@ -8,7 +9,7 @@ import java.util.List;
 public interface IPatientService {
 
     //create
-    public String createPatient(Patient patient);
+    public String savePatient(CreatePatientRequestDTO request);
 
 //    //read
 //    public PatientDTO getPatient(String dni);

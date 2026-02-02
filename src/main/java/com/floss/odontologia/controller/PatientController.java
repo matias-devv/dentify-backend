@@ -1,24 +1,21 @@
 package com.floss.odontologia.controller;
 
-import com.floss.odontologia.dto.response.PatientDTO;
+import com.floss.odontologia.dto.request.patient.CreatePatientRequestDTO;
 import com.floss.odontologia.model.Patient;
 import com.floss.odontologia.service.interfaces.IPatientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/patient")
+@RequestMapping("/api/patients")
 public class PatientController {
 
     @Autowired
-    private IPatientService iPatientService;
+    private IPatientService patientService;
 
-    @PostMapping("/create")
-    public String createPatient(@RequestBody Patient patient){
-        return iPatientService.createPatient(patient);
+    @PostMapping("/save")
+    public String savePatient(@RequestBody CreatePatientRequestDTO request){
+        return patientService.savePatient(request);
     }
 
 //    @GetMapping("/find/{dni}")

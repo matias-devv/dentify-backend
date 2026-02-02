@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity @Getter @Setter @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "patients")
+@Table(name = "patients") @Builder
 public class Patient {
 
     @Id
@@ -21,7 +21,7 @@ public class Patient {
     private String dni;
     private String name;
     private String surname;
-    private String age;
+    private Integer age;
     private LocalDate date_of_birth;
     private String insurance;
 

@@ -2,14 +2,11 @@ package com.floss.odontologia.model;
 
 import com.floss.odontologia.enums.Relation;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity @Getter @Setter @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "responsible_adults")
+@Table(name = "responsible_adults") @Builder
 public class ResponsibleAdult {
 
     @Id

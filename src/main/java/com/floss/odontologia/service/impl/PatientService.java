@@ -1,7 +1,10 @@
 package com.floss.odontologia.service.impl;
 
+import com.floss.odontologia.dto.request.patient.CreatePatientRequestDTO;
+import com.floss.odontologia.dto.request.patient.ResponsibleAdultDTO;
 import com.floss.odontologia.dto.response.PatientDTO;
 import com.floss.odontologia.model.Patient;
+import com.floss.odontologia.model.ResponsibleAdult;
 import com.floss.odontologia.repository.IPatientRepository;
 import com.floss.odontologia.service.interfaces.IPatientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +18,62 @@ import java.util.List;
 public class PatientService implements IPatientService {
 
     @Autowired
-    private IPatientRepository iPatientRepository;
+    private IPatientRepository patientRepository;
 
     @Override
-    public String createPatient(Patient patient) {
-        iPatientRepository.save(patient);
-        return "The patient was saved successfully";
+    public String savePatient(CreatePatientRequestDTO request) {
+
+        if ( request.responsibleAdultList() == null){
+
+            Patient patient = this.buildPatient( request);
+
+            patientRepository.save(patient);
+
+            return "The patient was registered successfully";
+
+        }
+
+        List<ResponsibleAdult> listAdults = new ArrayList<>();
+
+        request.responsibleAdultList().forEach( adult -> {
+
+            ResponsibleAdult newAdult = this.buildResponsibleAdult(adult);
+
+            listAdults.add(newAdult);
+        });
+
+        Patient patient = this.buildPatient(request);
+
+        patient.setResponsibleAdultList(listAdults);
+
+        patientRepository.save(patient);
+
+        return "The patient was registered successfully";
+    }
+
+    private ResponsibleAdult buildResponsibleAdult(ResponsibleAdultDTO adult) {
+        return ResponsibleAdult.builder()
+                .dni( adult.dni())
+                .name( adult.name())
+                .surname( adult.surname())
+                .phone_number( adult.phone_number())
+                .email( adult.email())
+                .relation( adult.relation())
+                .build();
+    }
+
+    private Patient buildPatient(CreatePatientRequestDTO request) {
+        return Patient.builder()
+                .dni(request.dni())
+                .name(request.name())
+                .surname(request.surname())
+                .age(request.age())
+                .date_of_birth(request.date_of_birth())
+                .insurance(request.insurance())
+                .coverageType(request.coverageType())
+                .phone_number(request.phone_number())
+                .email(request.email())
+                .build();
     }
 //
 //    @Override

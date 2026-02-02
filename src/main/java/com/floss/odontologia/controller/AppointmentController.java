@@ -1,7 +1,7 @@
 package com.floss.odontologia.controller;
 
-import com.floss.odontologia.dto.request.Appointment.createAppointmentRequestDTO;
-import com.floss.odontologia.dto.response.Appointment.createAppointmentResponseDTO;
+import com.floss.odontologia.dto.request.appointment.CreateAppointmentRequestDTO;
+import com.floss.odontologia.dto.response.appointment.CreateAppointmentResponseDTO;
 import com.floss.odontologia.model.Appointment;
 import com.floss.odontologia.service.interfaces.IAppointmentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,8 +23,8 @@ public class AppointmentController {
 
     @Operation( summary = "Create appointment")
     @PostMapping("/create")
-    public ResponseEntity<?> createAppointment(@RequestBody createAppointmentRequestDTO request){
-        createAppointmentResponseDTO response = appointmentService.createAppointmentWithPay(request);
+    public ResponseEntity<?> createAppointment(@RequestBody CreateAppointmentRequestDTO request){
+        CreateAppointmentResponseDTO response = appointmentService.createAppointmentWithPay(request);
         return ResponseEntity.ok(response);
     }
 
