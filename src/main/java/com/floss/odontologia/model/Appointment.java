@@ -25,7 +25,7 @@ public class Appointment {
     private String patient_instructions;
 
     @Enumerated( EnumType.STRING)
-    private AppointmentStatus appointmentStatus;
+    private AppointmentStatus appointmentStatus = AppointmentStatus.SCHEDULED;
 
     @Column( nullable = false)
     private LocalDate date;

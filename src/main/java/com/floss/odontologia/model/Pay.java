@@ -24,15 +24,14 @@ public class Pay {
     private PaymentMethod payment_method;
 
     @Enumerated ( EnumType.STRING)
-    private PaymentStatus payment_status;
+    private PaymentStatus payment_status = PaymentStatus.PENDING;
 
     private LocalDate date_generation;
     @Column(nullable = true)
     private LocalDate payment_date;
 
     private Integer total_installments;
-    private Integer pay_installments;
-    private Integer next_installment_date;
+    private Integer pay_installments = 0;
 
     @OneToOne ( mappedBy = "pay")
     private PaymentReceipt payment_receipt;
@@ -48,7 +47,7 @@ public class Pay {
     @JoinColumn ( name = "id_treatment", nullable = false)
     private Treatment treatment;
 
-    @OneToOne ( mappedBy = "pay")
-    private MercadoPagoPayment mercado_pago_payment;
+    @OneToOne ( mappedBy = "pay", cascade = CascadeType.ALL, orphanRemoval = true)
+    private MercadoPagoPayment mercado_pago_data;
 
 }

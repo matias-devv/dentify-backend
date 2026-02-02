@@ -12,31 +12,29 @@ import java.time.LocalDateTime;
 @Entity @AllArgsConstructor @NoArgsConstructor @Getter @Setter @Table ( name = "mercado_pago_payments")
 public class MercadoPagoPayment {
 
-    @Id @GeneratedValue ( strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column( length = 1000)
-    private String payment_link; // the link provided by the dentist
+    @Column(unique = true)
+    private String paymentId;
 
-    @Column( length = 100)
-    private String preference_id; // identify the payment in MP (optional)
+    @Column(nullable = false, unique = true)
+    private String preferenceId;
 
-    @Column( length = 100)
-    private String payment_id; // payment ID in MP upon completion
+    private String merchantOrderId;
 
-    private Integer installments; // number of installments (if applicable)
+    @Column(nullable = false)
+    private String externalReference;
 
-    private LocalDateTime generation_date;
-    private LocalDateTime payment_date;
+    private Integer installments;
+    private String paymentTypeId;
 
-    @Column( precision = 10, scale = 2)
-    private BigDecimal amount_paid;
-
-    @Column( length = 500)
-    private String receipt_url; // MP receipt URL
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_pay", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "pago_id", nullable = false, unique = true)
     private Pay pay;
+
+    @Column(length = 1000)
+    private String initPoint;
 
 }

@@ -18,17 +18,24 @@ public class Treatment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_treatment;
 
+    @Column(nullable = false)
     private BigDecimal base_price;
-    private Integer discount;
+
+    private BigDecimal discount = BigDecimal.ZERO;
+
+    @Column(nullable = false)
     private BigDecimal final_price;
+
+    @Column(nullable = false)
     private BigDecimal outstanding_balance;
 
     @Enumerated(EnumType.STRING)
-    private TreatmentStatus treatment_status;
+    @Column(nullable = false)
+    private TreatmentStatus treatment_status = TreatmentStatus.CREATED;
 
+    @Column(nullable = false)
     private LocalDate start_date;
 
-    @JoinColumn (nullable = false)
     private LocalDate final_date;
 
     //n treatments -> one app_user
@@ -52,7 +59,7 @@ public class Treatment {
     private Patient patient;
 
     //one treatment -> n pagos
-    @OneToMany ( mappedBy = "treatment")
+    @OneToMany ( mappedBy = "treatment", cascade = CascadeType.ALL)
     private List<Pay> pays;
 
     //one treatment -> n appointments
