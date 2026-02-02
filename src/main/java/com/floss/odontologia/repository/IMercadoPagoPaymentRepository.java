@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface IMercadoPagoPayment extends JpaRepository< MercadoPagoPayment ,Long> {
+public interface IMercadoPagoPaymentRepository extends JpaRepository< MercadoPagoPayment ,Long> {
     Optional<MercadoPagoPayment> findByExternalReference(String externalReference);
 }

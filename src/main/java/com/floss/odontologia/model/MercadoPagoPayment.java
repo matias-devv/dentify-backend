@@ -1,15 +1,12 @@
 package com.floss.odontologia.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity @AllArgsConstructor @NoArgsConstructor @Getter @Setter @Table ( name = "mercado_pago_payments")
+@Entity @AllArgsConstructor @NoArgsConstructor @Getter @Setter @Table ( name = "mercado_pago_payments") @Builder
 public class MercadoPagoPayment {
 
     @Id
