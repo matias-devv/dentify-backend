@@ -15,7 +15,6 @@ public class EventResponseDTO{
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
-    private Integer durationMinutes;
     private Long id_appointment;
     private String type;
     private String patient_name;
