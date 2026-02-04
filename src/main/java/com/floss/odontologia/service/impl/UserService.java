@@ -30,13 +30,13 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public AppUser getUserEntityById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public AppUser findUserById(Long id) {
+        return userRepository.findById( id ).orElseThrow( () -> new RuntimeException("App User not found"));
     }
 
     @Override
     public AppUser validateIfUserExists(Long id_user_app) {
-        AppUser appUser = this.getUserEntityById(id_user_app);
+        AppUser appUser = this.findUserById(id_user_app);
         if(appUser == null) {
             return null;
         }

@@ -9,5 +9,5 @@ public interface IAppointmentService {
     //read
     public Appointment getAppointmentById(Long id);
 
-    public CreateAppointmentResponseDTO createAppointmentWithPay(CreateAppointmentRequestDTO request);
+    public CreateAppointmentResponseDTO saveAppointmentWithPay(CreateAppointmentRequestDTO request);
 }

@@ -13,7 +13,8 @@ public interface IPatientService {
 
 //    //read
 //    public PatientDTO getPatient(String dni);
-//
+
+      public Patient findPatientById(Long id_patient);
 //    public List<PatientDTO> getPatients();
 //
 //    public int getTotalOfPatients();

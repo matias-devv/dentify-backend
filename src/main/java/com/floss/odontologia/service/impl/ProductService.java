@@ -9,6 +9,10 @@ import com.floss.odontologia.service.interfaces.ISpecialityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @Service
 public class ProductService implements IProductService {
 
@@ -16,44 +20,74 @@ public class ProductService implements IProductService {
     private IProductRepository productRepository;
 
     @Autowired
-    private ISpecialityService iSpecialityService;
+    private ISpecialityService specialityService;
 
     @Override
-    public String saveProduct(ProductDTO request) {
+    public String saveProduct(ProductDTO dto) {
 
-        Product product = new Product();
+        Product product = this.setAttributes(dto);
 
-        product = this.setAttributes( product, request);
-
-        Speciality speciality = iSpecialityService.getSpecialityEntityById(request.id_speciality());
+        Speciality speciality = specialityService.getSpecialityEntityById(dto.id_speciality());
 
         product.setSpeciality(speciality);
 
-        productRepository.save(product);
+        productRepository.save( product);
 
         return "the product was saved successfully";
     }
 
-    private Product setAttributes(Product product, ProductDTO request) {
-        product.setName_product(request.name_product());
-        product.setUnit_price(request.unit_price());
-        product.setDescription(request.description());
-        product.setActivo(request.activo());
+    private Product setAttributes( ProductDTO dto) {
+        Product product = new Product();
+        product.setName_product(dto.name_product());
+        product.setUnit_price(dto.unit_price());
+        product.setDescription(dto.description());
+        product.setActive(dto.activo());
         return product;
     }
 
     @Override
-    public Product getProductEntityById(Long id) {
-        return productRepository.findById(id).orElse(null);
+    public Product findProductById(Long id) {
+        return productRepository.findById( id ).orElseThrow( () -> new RuntimeException("Product not found"));
     }
 
     @Override
     public Product validateIfProductExists(Long id_product) {
-        Product product = this.getProductEntityById(id_product);
+        Product product = this.findProductById(id_product);
 
         if ( product == null ) {
             return null;
         }
         return product;
+    }
+
+    @Override
+    public String saveAll(List<ProductDTO> products) {
+
+        List<Product> newProducts = new ArrayList<>();
+
+        if ( products != null){
+
+            products.forEach(dto -> {
+
+                Product product = this.setAttributes(dto);
+
+                Speciality speciality = specialityService.getSpecialityEntityById(dto.id_speciality());
+
+                product.setSpeciality(speciality);
+
+                newProducts.add(product);
+            });
+        }
+
+        productRepository.saveAll(newProducts);
+
+        return "All the products was saved successfully";
+    }
+
+    @Override
+    public void validateIfProductIsActive(Product product) {
+        if (!product.getActive()) {
+            throw new RuntimeException("product is not active");
+        }
     }
 }

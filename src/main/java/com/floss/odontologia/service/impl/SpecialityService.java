@@ -9,12 +9,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SpecialityService implements ISpecialityService {
 
     @Autowired
-    private ISpecialityRepository iSpecialityRepository;
+    private ISpecialityRepository specialityRepository;
 
     @Override
     public String saveSpeciality(SpecialityDTO request) {
@@ -23,7 +24,7 @@ public class SpecialityService implements ISpecialityService {
 
         speciality.setName( request.name() );
 
-        iSpecialityRepository.save( speciality );
+        specialityRepository.save( speciality );
         return "The speciality was saved successfully";
     }
 
@@ -57,8 +58,27 @@ public class SpecialityService implements ISpecialityService {
 
     @Override
     public Speciality getSpecialityEntityById(Long id) {
-        return iSpecialityRepository.findById(id).orElse(null);
+        return specialityRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public String saveAll(List<SpecialityDTO> request) {
+
+        List<Speciality> newSpecialities = new ArrayList<>();
+
+        request.forEach(dto -> {
+
+            Speciality speciality = new Speciality();
+
+            speciality.setName(dto.name());
+
+            newSpecialities.add(speciality);
+        });
+        specialityRepository.saveAll(newSpecialities);
+
+        return "The specialities were saved successfully";
+    }
+
 
 //    @Override
 //    public String editSpeciality(Speciality speciality) {

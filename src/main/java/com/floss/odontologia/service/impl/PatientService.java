@@ -51,6 +51,11 @@ public class PatientService implements IPatientService {
         return "The patient was registered successfully";
     }
 
+    @Override
+    public Patient findPatientById(Long id_patient) {
+        return patientRepository.findById( id_patient ).orElseThrow( () -> new RuntimeException("Patient not found"));
+    }
+
     private ResponsibleAdult buildResponsibleAdult(ResponsibleAdultDTO adult) {
         return ResponsibleAdult.builder()
                 .dni( adult.dni())

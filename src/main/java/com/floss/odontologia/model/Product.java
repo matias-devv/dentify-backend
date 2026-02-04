@@ -25,8 +25,7 @@ public class Product {
     private String name_product;
     private BigDecimal unit_price;
     private String description;
-    private Boolean activo;
-
+    private Boolean active;
 
     @OneToMany( mappedBy = "product")
     private List<Agenda> agendas;

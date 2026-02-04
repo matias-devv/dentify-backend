@@ -24,8 +24,6 @@ public class Schedule {
     @JoinColumn( name = "id_agenda",  nullable = false)
     private Agenda agenda;
 
-    @Column( name = "duration_minutes", nullable = false)
-    private Integer duration_minutes;
     private LocalTime start_time;
     private LocalTime end_time;
 
