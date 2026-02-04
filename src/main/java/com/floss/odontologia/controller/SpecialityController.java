@@ -20,6 +20,11 @@ public class SpecialityController {
     public ResponseEntity<String> saveSpeciality(@RequestBody SpecialityDTO request) {
         return ResponseEntity.status(200).body( iSpecialityService.saveSpeciality(request) );
     }
+
+    @PostMapping("/save/all")
+    public ResponseEntity<String> saveSpeciality(@RequestBody List<SpecialityDTO> request) {
+        return ResponseEntity.status(200).body( iSpecialityService.saveAll(request) );
+    }
 //
 //    @GetMapping("/find/{name}")
 //    public ResponseEntity<?> findById(@PathVariable String name) {
