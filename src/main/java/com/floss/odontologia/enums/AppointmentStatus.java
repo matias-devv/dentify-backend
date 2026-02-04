@@ -3,7 +3,10 @@ package com.floss.odontologia.enums;
 public enum AppointmentStatus {
 
     SCHEDULED,      // appointment created, patient has not yet arrived
-                    // can be canceled, can be admitted, payment is due
+                    // can be canceled, can be admitted
+
+    CONFIRMED,      // the payment has already been made, we just have to wait for him to attend.
+
 
     ADMITTED,       // patient arrived and was registered at reception
                     // requires valid payment according to policy
