@@ -31,6 +31,9 @@ public class Agenda {
     @Column (nullable = false)
     private LocalDate final_date;
 
+    @Column( name = "duration_minutes", nullable = false)
+    private Integer duration_minutes;
+
     // n agendas -> 1 product
     @ManyToOne( fetch =  FetchType.LAZY)
     @JoinColumn ( name = "id_product", nullable = true)
