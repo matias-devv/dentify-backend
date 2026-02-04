@@ -17,8 +17,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AgendaService implements IAgendaService {
@@ -36,7 +38,7 @@ public class AgendaService implements IAgendaService {
     public String save(AgendaRequestDTO request) {
 
         //get user
-        AppUser user = userService.getUserEntityById(request.idUserApp());
+        AppUser user = userService.findUserById(request.idUserApp());
 
         if ( user == null){
             throw new RuntimeException("The user was not found");
@@ -52,7 +54,7 @@ public class AgendaService implements IAgendaService {
         Agenda agenda = this.setAttributesNewAgenda(request);
 
         if ( request.idProduct() != null){
-            Product product = productService.getProductEntityById(request.idProduct());
+            Product product = productService.findProductById(request.idProduct());
             if ( product != null){
                 agenda.setProduct(product);
             }
@@ -62,7 +64,7 @@ public class AgendaService implements IAgendaService {
         //add schedules
         request.schedules().forEach(schedule -> {
 
-            this.validateSchedules(schedule);
+            this.validateSchedules(schedule, request.duration_minutes());
 
             Schedule newSchedule = this.setAttributesNewSchedule(schedule);
 
@@ -74,12 +76,41 @@ public class AgendaService implements IAgendaService {
         return "The agenda was saved successfully";
     }
 
-    private void validateSchedules(Schedule schedule) {
+    @Override
+    public Agenda findAgendaById(Long idAgenda) {
+        return agendaRepository.findById( idAgenda ).orElseThrow( () -> new RuntimeException("Agenda not found"));
+    }
 
-        if (schedule.getDuration_minutes() < 15) {
+    @Override
+    public void validateIfAgendaIsActive(Agenda agenda) {
+
+        if( !agenda.getActive()){
+            throw new RuntimeException("Agenda is not active");
+        }
+    }
+
+    @Override
+    public void validateAgendaAvailability(Agenda agenda, LocalDate date, LocalTime start_time) {
+
+        if ( agenda.getStart_date().isAfter(date) && agenda.getFinal_date().isBefore(date)){
+            throw new RuntimeException("The date is not available in the calendar availability");
+        }
+
+    }
+
+    @Override
+    public void verifyIfThisAgendaBelongsToTheDentist(Agenda agenda, AppUser dentist) {
+        if ( agenda.getApp_user().getId_app_user() != ( dentist.getId_app_user())){
+            throw new RuntimeException("The dentist must own this appointment book");
+        }
+    }
+
+    private void validateSchedules(Schedule schedule, Integer duration_minutes) {
+
+        if ( duration_minutes < 15) {
             throw new RuntimeException("Minimum block duration is 15 minutes");
         }
-        if (schedule.getDuration_minutes() > 480) {
+        if ( duration_minutes > 480) {
             throw new RuntimeException("Maximum block duration is 8 hours");
         }
         if (schedule.getDays() == null || schedule.getDays().isEmpty()) {
@@ -88,7 +119,7 @@ public class AgendaService implements IAgendaService {
 
         long totalMinutes = Duration.between( schedule.getStart_time(), schedule.getEnd_time() ).toMinutes();
 
-        if (totalMinutes < schedule.getDuration_minutes()) {
+        if (totalMinutes < duration_minutes) {
             throw new RuntimeException("Time range is shorter than block duration");
         }
     }
@@ -123,7 +154,6 @@ public class AgendaService implements IAgendaService {
     private Schedule setAttributesNewSchedule(Schedule schedule) {
 
         Schedule newSchedule = new Schedule();
-        newSchedule.setDuration_minutes(schedule.getDuration_minutes());
         newSchedule.setStart_time(schedule.getStart_time());
         newSchedule.setEnd_time(schedule.getEnd_time());
 
@@ -139,6 +169,7 @@ public class AgendaService implements IAgendaService {
         agenda.setActive(agendaRequestDTO.active());
         agenda.setStart_date(agendaRequestDTO.startDate());
         agenda.setFinal_date(agendaRequestDTO.finalDate());
+        agenda.setDuration_minutes( agendaRequestDTO.duration_minutes());
         return agenda;
     }
 //
@@ -292,7 +323,6 @@ public class AgendaService implements IAgendaService {
                                           "BUSY",
                                            schedule.getStart_time(),
                                            schedule.getEnd_time(),
-                                           schedule.getDuration_minutes(),
                                            this.createAppointmentResponseDTO(appointment));
     }
 
@@ -311,7 +341,6 @@ public class AgendaService implements IAgendaService {
                                          "FREE",
                                           schedule.getStart_time(),
                                           schedule.getEnd_time(),
-                                          schedule.getDuration_minutes(),
                                           null);
     }
 
@@ -322,7 +351,7 @@ public class AgendaService implements IAgendaService {
         return new FastRecap( totalSlots, freeSlots, occupiedSlots, result );
     }
 
-    private @Nullable FullDailyResponseDTO convertToFullDailyResponseDTO(Agenda agenda, LocalDate date,
+    private FullDailyResponseDTO convertToFullDailyResponseDTO(Agenda agenda, LocalDate date,
                                                                          FastRecap dayRecap, List<EventDetailResponseDTO> slots) {
         return new FullDailyResponseDTO( agenda.getId_agenda(),
                                          agenda.getAgenda_name(),
@@ -483,7 +512,7 @@ public class AgendaService implements IAgendaService {
                                    state);
     }
 
-    private @Nullable MonthSummaryResponseDTO convertToMonthSumaryResponseDTO(Agenda agenda, MonthDateRangeRequestDTO request,
+    private MonthSummaryResponseDTO convertToMonthSumaryResponseDTO(Agenda agenda, MonthDateRangeRequestDTO request,
                                                                               List<DailySummaryDTO> summaryList) {
         return new MonthSummaryResponseDTO(agenda.getId_agenda(),
                                            agenda.getAgenda_name(),
@@ -499,7 +528,6 @@ public class AgendaService implements IAgendaService {
                                     date,
                                     schedule.getStart_time(),
                                     schedule.getEnd_time(),
-                                    schedule.getDuration_minutes(),
                                     appointment.getId_appointment(),
                                     "BUSY",
                                     appointment.getPatient().getName(),
@@ -512,7 +540,6 @@ public class AgendaService implements IAgendaService {
                                     date,
                                     schedule.getStart_time(),
                                     schedule.getEnd_time(),
-                                    schedule.getDuration_minutes(),
                                     null,
                                     "FREE",
                                     null,
