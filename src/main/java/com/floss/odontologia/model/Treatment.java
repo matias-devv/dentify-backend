@@ -29,7 +29,7 @@ public class Treatment {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TreatmentStatus treatment_status = TreatmentStatus.CREATED;
+    private TreatmentStatus treatmentStatus = TreatmentStatus.CREATED;
 
     @Column(nullable = false)
     private LocalDateTime start_date;
