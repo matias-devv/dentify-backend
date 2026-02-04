@@ -8,13 +8,18 @@ import com.floss.odontologia.enums.PaymentStatus;
 import com.floss.odontologia.enums.TreatmentStatus;
 import com.floss.odontologia.model.*;
 import com.floss.odontologia.repository.*;
-import com.floss.odontologia.service.interfaces.IAppointmentService;
+import com.floss.odontologia.service.interfaces.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -23,9 +28,11 @@ public class AppointmentService implements IAppointmentService {
 
     private final IAppointmentRepository appointmentRepository;
     private final ITreatmentRepository treatmentRepository;
-    private final IPatientRepository patientRepository;
-    private final IProductRepository productRepository;
     private final IPayRepository payRepository;
+    private final IPatientService patientService;
+    private final IProductService productService;
+    private final IUserService userService;
+    private final IAgendaService agendaService;
     private final MercadoPagoService mercadoPagoService;
 
     @Override
@@ -34,69 +41,242 @@ public class AppointmentService implements IAppointmentService {
     }
 
     @Override
-    public CreateAppointmentResponseDTO createAppointmentWithPay(CreateAppointmentRequestDTO request) {
+    @Transactional
+    public CreateAppointmentResponseDTO saveAppointmentWithPay(CreateAppointmentRequestDTO request) {
 
-        //validate patient and product
-        Patient patient = patientRepository.findById( request.id_patient() )
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        //find patient, product, dentist, agenda
+        Patient patient = patientService.findPatientById(request.id_patient());
 
-        Product product = productRepository.findById( request.id_product() )
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+        Product product = productService.findProductById(request.id_product());
 
-        //create or find the active treatment
-        Treatment treatment = Treatment.builder()
-                .patient(patient)
-                .product(product)
-                .base_price(product.getUnit_price())
-                .discount(BigDecimal.ZERO)
-                .final_price(product.getUnit_price())
-                .outstanding_balance( product.getUnit_price()) //call method to calculate this
-                .treatment_status(TreatmentStatus.CREATED)
-                .start_date(LocalDateTime.now())
-                .build();
+        AppUser dentist = userService.findUserById(request.id_dentist());
 
-        treatmentRepository.save(treatment);
+        Agenda agenda  = agendaService.findAgendaById( request.id_agenda());
+
+        //validations
+        agendaService.validateIfAgendaIsActive( agenda);
+
+        agendaService.verifyIfThisAgendaBelongsToTheDentist( agenda, dentist);
+
+        productService.validateIfProductIsActive( product);
+
+        agendaService.validateAgendaAvailability( agenda, request.date(), request.start_time());
+
+        //validate time availability
+        this.validateAppointmentAvailability( request.date(), request.start_time(), request.duration_minutes());
+
+        //create or find active treatment for this patient and product
+        Treatment treatment = findOrCreateTreatment( patient, product, dentist);
 
         //create appointment
-        Appointment appointment = Appointment.builder()
-                .patient( patient)
-                .treatment( treatment)
-                .date( request.date() )
-                .startTime( request.start_time() )
-                .duration_minutes( request.duration_minutes() )
-                .appointmentStatus( AppointmentStatus.SCHEDULED )
-                .build();
+        Appointment appointment = this.buildAppointment( patient, treatment, request, dentist, agenda);
 
-        appointmentRepository.save(appointment);
+        appointmentRepository.save( appointment);
 
-        //create pay
-        Pay pay = Pay.builder()
-                .treatment( treatment)
-                .appointment( appointment)
-                .amount( product.getUnit_price() )
-                .payment_method( request.paymentMethod() )
-                .payment_status( PaymentStatus.PENDING)
-                .date_generation( LocalDateTime.now())
-                .build();
+        //create payment
+        Pay pay = this.buildPay( appointment, treatment, request, product);
 
-        payRepository.save(pay);
+        payRepository.save( pay);
 
-        //If MercadoPago is present -> generate link
+        //if MercadoPago -> generate payment link
+        String paymentLink = null;
 
-        String payLink = null;
+        //If he/her pay with mercado pago
         if (request.paymentMethod() == PaymentMethod.MERCADO_PAGO) {
-            payLink = mercadoPagoService.createPaymentPreference(pay);
-            log.info("payment link generated: {}", payLink);
+
+            paymentLink = this.validateMercadoPagoPayment(request, pay);
         }
 
-        return CreateAppointmentResponseDTO.builder()
-                .id_appointment( appointment.getId_appointment())
-                .id_treatment( treatment.getId_treatment())
-                .id_pay( pay.getId_pay())
-                .pay_link( payLink)
-                .appointment_status( appointment.getAppointmentStatus())
-                .build();
+        //If pay in cash -> pay now or later
+        if ( request.paymentMethod() == PaymentMethod.CASH){
+
+             this.validateCashPayment(request, treatment, pay, appointment);
+        }
+
+        return this.buildResponse( patient, product, pay, treatment, request, appointment, paymentLink);
     }
+
+    private String validateMercadoPagoPayment(CreateAppointmentRequestDTO request, Pay pay) {
+
+        String paymentLink = mercadoPagoService.createPaymentPreference(pay);
+
+        return paymentLink;
+    }
+
+    private void validateCashPayment(CreateAppointmentRequestDTO request, Treatment treatment, Pay pay, Appointment appointment) {
+
+        if ( request.payNow() == null){
+            throw new RuntimeException("If he chose to pay in cash, it is necessary to know if he is paying now or on the day of the appointment");
+        }
+        if ( request.payNow()) {
+
+            this.upgradeToPaidAppointment( treatment, pay, appointment);
+        }
+    }
+
+    private void upgradeToPaidAppointment(Treatment treatment, Pay pay, Appointment appointment) {
+
+        this.actualizeTreatmentOutstandingBalanceAndSetStatusInProgress(treatment, pay);
+
+        this.actualizePaymentStatusToPaidAndSetActualDate(pay);
+
+        this.actualizeAppointmentStatusToConfirmed(appointment);
+    }
+
+    private void actualizeTreatmentOutstandingBalanceAndSetStatusInProgress(Treatment treatment, Pay pay) {
+
+        BigDecimal updatedAmount = treatment.getOutstanding_balance().subtract( pay.getAmount() );
+        //set new outstanding balance
+        treatment.setOutstanding_balance(updatedAmount);
+
+        //actualize treatment status( CREATED) ->  IN PROGRESS
+        if (treatment.getTreatmentStatus() == TreatmentStatus.CREATED) {
+            treatment.setTreatmentStatus(TreatmentStatus.IN_PROGRESS);
+        }
+        treatmentRepository.save(treatment);
+    }
+
+    private void actualizePaymentStatusToPaidAndSetActualDate(Pay pay) {
+
+        pay.setPayment_status(PaymentStatus.PAID);
+
+        pay.setDate_generation(LocalDateTime.now());
+
+        payRepository.save(pay);
+    }
+
+    private void actualizeAppointmentStatusToConfirmed(Appointment appointment) {
+        //change appointment status( SCHEDULED) -> CONFIRMED
+        appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
+
+        appointmentRepository.save(appointment);
+    }
+
+    private CreateAppointmentResponseDTO buildResponse(Patient patient, Product product, Pay pay, Treatment treatment,
+                                                       CreateAppointmentRequestDTO request, Appointment appointment, String paymentLink) {
+        return CreateAppointmentResponseDTO.builder()
+                                            .id_appointment( appointment.getId_appointment())
+                                            .id_treatment( treatment.getId_treatment())
+                                            .id_pay( pay.getId_pay())
+                                            .date( appointment.getDate())
+                                            .start_time( appointment.getStartTime())
+                                            .duration_minutes( request.duration_minutes())
+                                            .end_time( appointment.getStartTime().plusMinutes( request.duration_minutes() ) )
+                                            .amount_to_pay( pay.getAmount())
+                                            .payment_method( pay.getPayment_method())
+                                            .payment_link( paymentLink)
+                                            .appointment_status( appointment.getAppointmentStatus())
+                                            .payment_status( pay.getPayment_status())
+                                            .product_name( product.getName_product())
+                                            .build();
+    }
+
+    private Pay buildPay( Appointment appointment, Treatment treatment, CreateAppointmentRequestDTO request,  Product product) {
+        return  Pay.builder()
+                    .treatment(treatment)
+                    .appointment(appointment)
+                    .amount( product.getUnit_price()) // always from the product
+                    .payment_method( request.paymentMethod())
+                    .payment_status( PaymentStatus.PENDING)
+                    .date_generation( LocalDateTime.now())
+                    .build();
+    }
+
+    private Appointment buildAppointment(Patient patient, Treatment treatment, CreateAppointmentRequestDTO request,  AppUser dentist, Agenda agenda) {
+        return Appointment  .builder()
+                            .notes( request.notes())
+                            .patient_instructions( request.patient_instructions())
+                            .appointmentStatus(AppointmentStatus.SCHEDULED)
+                            .date(request.date())
+                            .startTime(request.start_time())
+                            .duration_minutes( request.duration_minutes())
+                            .app_user(dentist)
+                            .patient(patient)
+                            .treatment(treatment)
+                            .agenda(agenda)
+                            .build();
+    }
+
+    private void validateAppointmentAvailability(LocalDate date, LocalTime startTime, Integer duration) {
+
+        LocalTime endTime = startTime.plusMinutes(duration);
+
+        //find overlapping appointments
+        List<Appointment> existingAppointments = appointmentRepository.findByDate(date);
+
+        if (existingAppointments != null) {
+
+            for (Appointment appointment : existingAppointments) {
+
+                if ( appointment.getAppointmentStatus() == AppointmentStatus.CANCELLED) {
+                    continue; //ignore cancelled
+                }
+
+                LocalTime existingStart = appointment.getStartTime();
+                LocalTime existingEnd = existingStart.plusMinutes(appointment.getDuration_minutes());
+
+                //verify overlap
+                if( startTime.isBefore(existingEnd) && endTime.isAfter(existingStart)) {
+                    throw new RuntimeException(
+                            String.format("Time slot not available. Conflict with appointment at %s", existingStart)
+                    );
+                }
+            }
+        }
+    }
+
+    private Treatment findOrCreateTreatment(Patient patient, Product product, AppUser dentist) {
+
+        // Find active treatment for this patient and service
+        Optional<Treatment> existingTreatment = treatmentRepository.findByPatientAndProductAndTreatmentStatus( patient,
+                                                                                                                product,
+                                                                                                                TreatmentStatus.CREATED);
+
+        if ( existingTreatment.isPresent() ) {
+            return existingTreatment.get();
+        }
+
+        // if not exists -> new treatment
+        Treatment newTreatment = this.buildTreatment( patient, product, dentist);
+
+        treatmentRepository.save(newTreatment);
+
+        return newTreatment;
+    }
+
+    private Treatment buildTreatment(Patient patient, Product product, AppUser dentist) {
+        return Treatment.builder()
+                        .base_price( product.getUnit_price())
+                        .discount(BigDecimal.ZERO)
+                        .final_price( product.getUnit_price())
+                        .outstanding_balance( product.getUnit_price())
+                        .treatmentStatus( TreatmentStatus.CREATED)
+                        .start_date( LocalDateTime.now())
+                        .app_user(dentist)
+                        .patient(patient)
+                        .product(product)
+                        .build();
+    }
+
+    public void admitPatient(Long appointmentId) {
+
+        Optional<Appointment> existingAppointment = appointmentRepository.findById(appointmentId);
+
+        if ( existingAppointment.isPresent() ) {
+
+            //validate if paymentStatus is PAID
+            boolean isPaid = existingAppointment.get().getPays().stream()
+                                                                     .anyMatch(p -> p.getPayment_status() == PaymentStatus.PAID);
+
+            if ( !isPaid) {
+                throw new RuntimeException("The patient cannot be admitted without confirmed payment");
+            }
+            existingAppointment.get().setAppointmentStatus(AppointmentStatus.ADMITTED);
+
+            appointmentRepository.save( existingAppointment.get() );
+        }
+    }
+
 //
 //    @Override
 //    public List<LocalTime> getHoursOfDentist(LocalDate choosenDate, Long id_dentist, String selectedDay) {
