@@ -22,9 +22,9 @@ public class AppointmentController {
     private IAppointmentService appointmentService;
 
     @Operation( summary = "Create appointment")
-    @PostMapping("/create")
-    public ResponseEntity<?> createAppointment(@RequestBody CreateAppointmentRequestDTO request){
-        CreateAppointmentResponseDTO response = appointmentService.createAppointmentWithPay(request);
+    @PostMapping("/save")
+    public ResponseEntity<?> saveAppointment(@RequestBody CreateAppointmentRequestDTO request){
+        CreateAppointmentResponseDTO response = appointmentService.saveAppointmentWithPay(request);
         return ResponseEntity.ok(response);
     }
 
