@@ -4,6 +4,7 @@ public enum NotificationStatus {
 
     PENDING,        // created, not yet sent
     SENT,           // sent successfully
-    FAILED,         // final ruling
+    RETRY,
+    FAILED_FINAL,         // final ruling
     INVALID_TARGET  // invalid email or phone number
 }
