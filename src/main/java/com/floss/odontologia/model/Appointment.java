@@ -1,10 +1,12 @@
 package com.floss.odontologia.model;
 
 import com.floss.odontologia.enums.AppointmentStatus;
+import com.floss.odontologia.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -36,6 +38,9 @@ public class Appointment {
     @Column(nullable = true)
     private String reason_for_cancellation;
 
+    private Boolean attendance_confirmed = false;
+    private LocalDateTime confirmed_at;
+
     //n appointment -> 1 user
     @ManyToOne
     @JoinColumn( name = "id_app_user", nullable = false)
@@ -64,4 +69,16 @@ public class Appointment {
     @JoinColumn( name = "id_agenda", nullable = false)
     private Agenda agenda;
 
+    public PaymentMethod getPrimaryPaymentMethod() {
+        return this.pays.stream()
+                .findFirst()
+                .map(Pay::getPayment_method)
+                .orElse(null);
+    }
+
+    public Pay getPrimaryPayment() {
+        return this.pays.stream()
+                .findFirst()
+                .orElseThrow( () -> new IllegalStateException("Appointment without payments. appointmentId=" + this.id_appointment) );
+    }
 }
