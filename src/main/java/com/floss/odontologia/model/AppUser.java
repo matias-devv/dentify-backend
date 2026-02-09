@@ -19,6 +19,7 @@ public class AppUser {
 
     private String name;
     private String surname;
+    private String clinic_name;
     private String dni;
 
     @Column( unique = true, nullable = false)
