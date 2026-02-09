@@ -27,11 +27,18 @@ public class MercadoPagoPayment {
     private Integer installments;
     private String paymentTypeId;
 
+    @Column(length = 1000)
+    private String initPoint;
+
+    //fields for debug
+    private String status;                  // approved, pending, rejected
+    private String statusDetail;            // cc_rejected_bad_filled_card_number
+    private BigDecimal transactionAmount;
+    private String payerEmail;
+    private LocalDateTime dateApproved;
+
     @OneToOne
     @JoinColumn(name = "pago_id", nullable = false, unique = true)
     private Pay pay;
-
-    @Column(length = 1000)
-    private String initPoint;
 
 }
