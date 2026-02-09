@@ -1,10 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 25px;
+        }
+        .clinic-logo {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .clinic-name {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .content {
+            margin-top: 30px;
+        }
+        .welcome-text {
+            font-size: 16px;
+            color: #34495e;
+            line-height: 1.6;
+        }
+        .success-badge {
+            background-color: #27ae60;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            display: inline-block;
+            margin: 20px 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .details-container {
+            background-color: #f8fbfc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .info-row {
+            display: block;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: 600;
+            color: #718096;
+            font-size: 14px;
+        }
+        .value {
+            color: #2d3748;
+            float: right;
+            font-weight: 700;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .footer strong {
+            color: #718096;
+        }
+        /* Limpieza para el float */
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <div class="header">
+        <img th:if="${clinicLogo != null}" th:src="${clinicLogo}" alt="Logo Clínica" class="clinic-logo">
+        <h1 class="clinic-name" th:text="${nombreClinica}">MI CLÍNICA DENTAL</h1>
+        <p style="color: #2ecc71; font-weight: bold; margin-top: 10px;">Pago Confirmado</p>
+    </div>
 
+    <div class="content">
+        <p class="welcome-text">Hola <strong th:text="${paciente}">Paciente</strong>,</p>
+        <p class="welcome-text">Tu pago ha sido procesado con éxito. Aquí tienes el resumen de tu turno confirmado:</p>
+
+        <center>
+            <div class="success-badge">
+                TURNO CONFIRMADO
+            </div>
+        </center>
+
+        <div class="details-container">
+            <div class="info-row clearfix">
+                <span class="label">Fecha del turno:</span>
+                <span class="value" th:text="${fecha}">01/01/2026</span>
+            </div>
+
+            <div class="info-row clearfix">
+                <span class="label">Hora:</span>
+                <span class="value" th:text="${hora}">10:00 AM</span>
+            </div>
+
+            <div class="info-row clearfix">
+                <span class="label">Monto pagado:</span>
+                <span class="value" th:text="'$' + ${monto}">0.00</span>
+            </div>
+
+            <div class="info-row clearfix">
+                <span class="label">Método de pago:</span>
+                <span class="value" th:text="${metodoPago}">Tarjeta</span>
+            </div>
+
+            <div class="info-row clearfix" th:if="${cuotas != null && cuotas > 1}">
+                <span class="label">Cuotas:</span>
+                <span class="value" th:text="${cuotas} + ' cuotas'">1 cuota</span>
+            </div>
+
+            <div class="info-row clearfix">
+                <span class="label">Fecha de pago:</span>
+                <span class="value" th:text="${fechaPago}">01/01/2026</span>
+            </div>
+
+            <div class="info-row clearfix">
+                <span class="label">ID de transacción:</span>
+                <span class="value" style="font-family: monospace;" th:text="${transactionId}">#123456789</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Este es un comprobante automático generado por <strong>Software Dental Pro</strong>.</p>
+        <p>Por favor, no respondas a este mensaje.</p>
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2026</span> <span th:text="${nombreClinica}">Mi Clínica</span>. Todos los derechos reservados.</p>
+    </div>
+</div>
 </body>
 </html>
