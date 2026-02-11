@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acción Requerida - Turnos Perdidos</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 30px 25px;
+            color: #333;
+            line-height: 1.6;
+        }
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .critical-box {
+            background-color: #ffebee;
+            border-left: 4px solid #d32f2f;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .critical-box strong {
+            color: #c62828;
+            font-size: 16px;
+        }
+        .appointment-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .appointment-details p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+        .action-required {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .action-required h3 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+        .action-required ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .action-required li {
+            margin: 8px 0;
+        }
+        .cta-buttons {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            padding: 14px 35px;
+            border-radius: 5px;
+            margin: 10px 5px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background-color: #d32f2f;
+        }
+        .btn-secondary {
+            background-color: #1976d2;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .contact-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🚨 Acción Requerida</h1>
+    </div>
+
+    <div class="content">
+        <p class="greeting">Estimado/a <strong th:text="${patientName}">Paciente</strong>,</p>
+
+        <p>Lamentablemente, hemos registrado <strong>múltiples turnos perdidos sin previo aviso</strong> en los últimos 30 días. Este patrón afecta significativamente nuestra capacidad de brindar atención a todos nuestros pacientes.</p>
+
+        <div class="appointment-details">
+            <p><strong>Último turno perdido:</strong></p>
+            <p><strong>Fecha:</strong> <span th:text="${appointmentDate}">01/02/2026</span></p>
+            <p><strong>Hora:</strong> <span th:text="${appointmentTime}">10:00</span></p>
+        </div>
+
+        <div class="critical-box">
+            <p><strong>🚨 Situación Crítica:</strong> Has perdido 3 o más turnos en el último mes. Para continuar brindándote atención de calidad y garantizar disponibilidad para todos nuestros pacientes, necesitamos que tomes acción inmediata.</p>
+        </div>
+
+        <div class="action-required">
+            <h3>✅ ¿Qué necesitamos de ti?</h3>
+            <ul>
+                <li><strong>Contactarnos</strong> en las próximas 48 horas para discutir cómo podemos ayudarte a mantener tus citas</li>
+                <li><strong>Confirmar</strong> si deseas continuar con futuros turnos agendados</li>
+                <li><strong>Establecer</strong> un sistema de recordatorios que funcione mejor para ti</li>
+            </ul>
+        </div>
+
+        <p><strong>Estamos aquí para ayudarte.</strong> Entendemos que las circunstancias pueden ser difíciles, y queremos trabajar contigo para encontrar una solución que funcione para ambas partes.</p>
+
+        <div class="cta-buttons">
+            <a href="tel:[[${clinicPhone}]]" class="cta-button btn-primary">Llamar ahora</a>
+            <a th:href="${onlineBookingUrl}" class="cta-button btn-secondary">Gestionar turnos online</a>
+        </div>
+
+        <p style="font-size: 14px; color: #666; margin-top: 25px;">
+            <strong>Nota:</strong> Si no podemos establecer comunicación en los próximos días, es posible que debamos aplicar políticas de confirmación adicionales para futuros turnos.
+        </p>
+    </div>
+
+    <div class="footer">
+        <p><strong th:text="${clinicName}">Tu Clínica</strong></p>
+        <div class="contact-info">
+            <p>📞 <span th:text="${clinicPhone}">Teléfono</span></p>
+            <p>✉️ <span th:text="${clinicEmail}">Email</span></p>
+            <p style="margin-top: 15px; font-size: 12px;">
+                Horario de atención: Lunes a Viernes 8:00 - 18:00<br>
+                Este es un mensaje automático, por favor no respondas a este email.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

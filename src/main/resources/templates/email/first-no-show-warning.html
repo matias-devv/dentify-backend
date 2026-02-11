@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turno Perdido</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 30px 25px;
+            color: #333;
+            line-height: 1.6;
+        }
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .info-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .appointment-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .appointment-details p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+        .appointment-details strong {
+            color: #495057;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #667eea;
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .contact-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📅 Turno Perdido</h1>
+    </div>
+
+    <div class="content">
+        <p class="greeting">Hola <strong th:text="${patientName}">Paciente</strong>,</p>
+
+        <p>Notamos que no pudiste asistir a tu turno programado. Entendemos que pueden surgir imprevistos.</p>
+
+        <div class="appointment-details">
+            <p><strong>Fecha:</strong> <span th:text="${appointmentDate}">01/02/2026</span></p>
+            <p><strong>Hora:</strong> <span th:text="${appointmentTime}">10:00</span></p>
+        </div>
+
+        <div class="info-box">
+            <p style="margin: 0;"><strong>💡 Recordatorio:</strong> Si no puedes asistir a un turno, por favor avísanos con al menos 24 horas de anticipación. Esto nos permite ofrecer el horario a otro paciente que lo necesite.</p>
+        </div>
+
+        <p>¿Necesitas reagendar? Estamos aquí para ayudarte.</p>
+
+        <center>
+            <a href="tel:[[${clinicPhone}]]" class="cta-button">Llamar para reagendar</a>
+        </center>
+    </div>
+
+    <div class="footer">
+        <p><strong th:text="${clinicName}">Tu Clínica</strong></p>
+        <div class="contact-info">
+            <p>📞 <span th:text="${clinicPhone}">Teléfono</span></p>
+            <p>Este es un mensaje automático, por favor no respondas a este email.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

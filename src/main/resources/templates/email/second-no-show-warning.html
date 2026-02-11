@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segundo Turno Perdido</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 30px 25px;
+            color: #333;
+            line-height: 1.6;
+        }
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ff6b6b;
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .warning-box strong {
+            color: #d63031;
+        }
+        .appointment-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .appointment-details p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+        .tips-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .tips-box ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .tips-box li {
+            margin: 8px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #f5576c;
+            color: white;
+            text-decoration: none;
+            padding: 14px 35px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .contact-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>⚠️ Segundo Turno Perdido</h1>
+    </div>
+
+    <div class="content">
+        <p class="greeting">Estimado/a <strong th:text="${patientName}">Paciente</strong>,</p>
+
+        <p>Este es tu segundo turno perdido en los últimos 30 días. Queremos asegurarnos de que todo esté bien y recordarte la importancia de mantener tus citas o cancelarlas con anticipación.</p>
+
+        <div class="appointment-details">
+            <p><strong>Último turno perdido:</strong></p>
+            <p><strong>Fecha:</strong> <span th:text="${appointmentDate}">01/02/2026</span></p>
+            <p><strong>Hora:</strong> <span th:text="${appointmentTime}">10:00</span></p>
+        </div>
+
+        <div class="warning-box">
+            <p><strong>⚠️ Atención:</strong> Los turnos perdidos sin aviso afectan nuestra capacidad de atender a otros pacientes que necesitan atención urgente.</p>
+        </div>
+
+        <div class="tips-box">
+            <p><strong>💡 Recomendaciones para evitar perder turnos:</strong></p>
+            <ul>
+                <li>Agrega recordatorios en tu calendario personal</li>
+                <li>Si tienes un imprevisto, llámanos lo antes posible</li>
+                <li>Podemos enviarte recordatorios por WhatsApp si lo prefieres</li>
+                <li>Programa tus turnos en horarios que te resulten más convenientes</li>
+            </ul>
+        </div>
+
+        <p><strong>¿Necesitas ayuda para coordinar tus próximos turnos?</strong> Nuestro equipo está disponible para encontrar horarios que se ajusten mejor a tu disponibilidad.</p>
+
+        <center>
+            <a href="tel:[[${clinicPhone}]]" class="cta-button">Contáctanos ahora</a>
+        </center>
+    </div>
+
+    <div class="footer">
+        <p><strong th:text="${clinicName}">Tu Clínica</strong></p>
+        <div class="contact-info">
+            <p>📞 <span th:text="${clinicPhone}">Teléfono</span></p>
+            <p>✉️ <span th:text="${clinicEmail}">Email</span></p>
+            <p style="margin-top: 10px; font-size: 12px;">Este es un mensaje automático, por favor no respondas a este email.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
