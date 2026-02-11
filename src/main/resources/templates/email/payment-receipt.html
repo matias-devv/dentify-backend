@@ -2,160 +2,127 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .header {
-            text-align: center;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 25px;
-        }
-        .clinic-logo {
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 10px;
-        }
-        .clinic-name {
-            color: #2c3e50;
-            margin: 0;
-            font-size: 24px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .content {
-            margin-top: 30px;
-        }
-        .welcome-text {
-            font-size: 16px;
-            color: #34495e;
-            line-height: 1.6;
-        }
-        .success-badge {
-            background-color: #27ae60;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            display: inline-block;
-            margin: 20px 0;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .details-container {
-            background-color: #f8fbfc;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        .info-row {
-            display: block;
-            padding: 12px 0;
-            border-bottom: 1px solid #edf2f7;
-        }
-        .info-row:last-child {
-            border-bottom: none;
-        }
-        .label {
-            font-weight: 600;
-            color: #718096;
-            font-size: 14px;
-        }
-        .value {
-            color: #2d3748;
-            float: right;
-            font-weight: 700;
-        }
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            color: #a0aec0;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-        .footer strong {
-            color: #718096;
-        }
-        /* Limpieza para el float */
-        .clearfix::after {
-            content: "";
-            clear: both;
-            display: table;
-        }
-    </style>
+    <title>Comprobante de Pago - Confirmación</title>
 </head>
-<body>
-<div class="container">
-    <div class="header">
-        <img th:if="${clinicLogo != null}" th:src="${clinicLogo}" alt="Logo Clínica" class="clinic-logo">
-        <h1 class="clinic-name" th:text="${nombreClinica}">MI CLÍNICA DENTAL</h1>
-        <p style="color: #2ecc71; font-weight: bold; margin-top: 10px;">Pago Confirmado</p>
-    </div>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
 
-    <div class="content">
-        <p class="welcome-text">Hola <strong th:text="${paciente}">Paciente</strong>,</p>
-        <p class="welcome-text">Tu pago ha sido procesado con éxito. Aquí tienes el resumen de tu turno confirmado:</p>
+<table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 40px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
 
-        <center>
-            <div class="success-badge">
-                TURNO CONFIRMADO
+    <!-- Header -->
+    <tr>
+        <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
+            <table width="100%">
+                <tr>
+                    <td style="padding: 0 20px;">
+                        <div style="background: white; width: 64px; height: 64px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                            <svg style="width: 32px; height: 32px; color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <h1 style="color: white; margin: 20px 0 10px 0; font-size: 28px; font-weight: 600;">Pago Confirmado</h1>
+                        <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 16px;">Comprobante de pago generado automáticamente</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- Patient Info -->
+    <tr>
+        <td style="padding: 32px 30px 20px 30px;">
+            <p style="margin: 0 0 16px 0; color: #4b5563; font-size: 16px;">
+                Hola <strong style="color: #1f2937;" th:text="${patientName}">Paciente</strong>,
+            </p>
+            <p style="margin: 0; color: #4b5563; font-size: 16px; line-height: 1.6;">
+                Hemos recibido tu pago correctamente. Tu turno está confirmado y te esperamos en la fecha acordada.
+            </p>
+        </td>
+    </tr>
+
+    <!-- Payment Details Card -->
+    <tr>
+        <td style="padding: 0 30px 20px 30px;">
+            <div style="background: #f8fafc; border-radius: 8px; padding: 24px; border-left: 4px solid #10b981;">
+                <h3 style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600;">Detalles del Pago</h3>
+
+                <table width="100%" cellpadding="8" cellspacing="0">
+                    <tr>
+                        <td width="40%" style="color: #6b7280; font-size: 14px; padding: 8px 0;">Comprobante N°</td>
+                        <td style="color: #1f2937; font-weight: 500; font-size: 14px; padding: 8px 0;" th:text="${receiptNumber}">12345</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #6b7280; font-size: 14px; padding: 8px 0;">Monto</td>
+                        <td style="color: #1f2937; font-weight: 600; font-size: 16px; padding: 8px 0;">
+                            $<span th:text="${amount}">5000</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="color: #6b7280; font-size: 14px; padding: 8px 0;">Método de pago</td>
+                        <td style="color: #1f2937; font-weight: 500; font-size: 14px; padding: 8px 0;" th:text="${paymentMethod}">Efectivo</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #6b7280; font-size: 14px; padding: 8px 0;">Fecha de pago</td>
+                        <td style="color: #1f2937; font-weight: 500; font-size: 14px; padding: 8px 0;" th:text="${paymentDate}">01/02/2025 14:30</td>
+                    </tr>
+
+                    <tr th:if="${paymentId != null}">
+                        <td style="color: #6b7280; font-size: 14px; padding: 8px 0;">ID Transacción</td>
+                        <td style="color: #1f2937; font-weight: 500; font-size: 14px; padding: 8px 0;" th:text="${paymentId}">123456789</td>
+                    </tr>
+
+                    <tr th:if="${installments != null and installments > 1}">
+                        <td style="color: #6b7280; font-size: 14px; padding: 8px 0;">Cuotas</td>
+                        <td style="color: #1f2937; font-weight: 500; font-size: 14px; padding: 8px 0;" th:text="${installments}">3</td>
+                    </tr>
+                </table>
             </div>
-        </center>
+        </td>
+    </tr>
 
-        <div class="details-container">
-            <div class="info-row clearfix">
-                <span class="label">Fecha del turno:</span>
-                <span class="value" th:text="${fecha}">01/01/2026</span>
+    <!-- Appointment Details -->
+    <tr>
+        <td style="padding: 0 30px 30px 30px;">
+            <div style="background: #fef3c7; border-radius: 8px; padding: 24px;">
+                <h3 style="margin: 0 0 16px 0; color: #92400e; font-size: 18px; font-weight: 600;">📅 Información del Turno</h3>
+
+                <table width="100%" cellpadding="8" cellspacing="0">
+                    <tr>
+                        <td width="40%" style="color: #92400e; font-size: 14px; padding: 8px 0;">Fecha</td>
+                        <td style="color: #92400e; font-weight: 600; font-size: 14px; padding: 8px 0;" th:text="${appointmentDate}">15/02/2025</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #92400e; font-size: 14px; padding: 8px 0;">Hora</td>
+                        <td style="color: #92400e; font-weight: 600; font-size: 14px; padding: 8px 0;" th:text="${appointmentTime}">10:00</td>
+                    </tr>
+                </table>
+
+                <div style="background: #fde68a; border-radius: 6px; padding: 12px; margin-top: 16px;">
+                    <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.5;">
+                        ⏰ Por favor, llega 10 minutos antes de tu horario asignado.
+                    </p>
+                </div>
             </div>
+        </td>
+    </tr>
 
-            <div class="info-row clearfix">
-                <span class="label">Hora:</span>
-                <span class="value" th:text="${hora}">10:00 AM</span>
-            </div>
+    <!-- Footer -->
+    <tr>
+        <td style="background: #f8fafc; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+            <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 14px; line-height: 1.5;">
+                Este comprobante es válido como constancia de pago.<br>
+                Presentalo al momento de tu consulta si es requerido.
+            </p>
 
-            <div class="info-row clearfix">
-                <span class="label">Monto pagado:</span>
-                <span class="value" th:text="'$' + ${monto}">0.00</span>
-            </div>
+            <div style="background: #e5e7eb; height: 1px; margin: 20px 0;"></div>
 
-            <div class="info-row clearfix">
-                <span class="label">Método de pago:</span>
-                <span class="value" th:text="${metodoPago}">Tarjeta</span>
-            </div>
+            <p style="margin: 0; color: #9ca3af; font-size: 12px; line-height: 1.5;">
+                Este es un correo automático. Por favor no respondas a este mensaje.<br>
+                <span style="color: #6b7280;">© 2024 Centro Médico. Todos los derechos reservados.</span>
+            </p>
+        </td>
+    </tr>
 
-            <div class="info-row clearfix" th:if="${cuotas != null && cuotas > 1}">
-                <span class="label">Cuotas:</span>
-                <span class="value" th:text="${cuotas} + ' cuotas'">1 cuota</span>
-            </div>
+</table>
 
-            <div class="info-row clearfix">
-                <span class="label">Fecha de pago:</span>
-                <span class="value" th:text="${fechaPago}">01/01/2026</span>
-            </div>
-
-            <div class="info-row clearfix">
-                <span class="label">ID de transacción:</span>
-                <span class="value" style="font-family: monospace;" th:text="${transactionId}">#123456789</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>Este es un comprobante automático generado por <strong>Software Dental Pro</strong>.</p>
-        <p>Por favor, no respondas a este mensaje.</p>
-        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2026</span> <span th:text="${nombreClinica}">Mi Clínica</span>. Todos los derechos reservados.</p>
-    </div>
-</div>
 </body>
 </html>
