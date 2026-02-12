@@ -105,6 +105,16 @@ public class AgendaService implements IAgendaService {
         }
     }
 
+    @Override
+    public void validateCreateAppointment(Agenda agenda, AppUser dentist, Product product, LocalDate date, LocalTime starTime) {
+
+        this.validateIfAgendaIsActive( agenda);
+
+        this.verifyIfThisAgendaBelongsToTheDentist( agenda, dentist);
+
+        this.validateAgendaAvailability( agenda, date, starTime);
+    }
+
     private void validateSchedules(Schedule schedule, Integer duration_minutes) {
 
         if ( duration_minutes < 15) {
