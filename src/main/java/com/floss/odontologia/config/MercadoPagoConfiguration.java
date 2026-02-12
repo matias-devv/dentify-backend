@@ -1,5 +1,6 @@
 package com.floss.odontologia.config;
 
+import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.PreferenceClient;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 @Slf4j
-public class MercadoPagoConfig {
+public class MercadoPagoConfiguration {
 
     @Value("${mercadopago.access-token}")
     private String accessToken;
@@ -33,11 +34,11 @@ public class MercadoPagoConfig {
             // Set the access token globally for all MercadoPago API calls
             MercadoPagoConfig.setAccessToken(accessToken);
 
-            log.info("✅ MercadoPago SDK configured successfully");
-            log.info("   Access Token: {}***", accessToken.substring(0, Math.min(10, accessToken.length())));
+            log.info("MercadoPago SDK configured successfully");
+            log.info("Access Token: {}***", accessToken.substring(0, Math.min(10, accessToken.length())));
 
         } catch (Exception e) {
-            log.error("❌ Error configuring MercadoPago SDK", e);
+            log.error("Error configuring MercadoPago SDK", e);
             throw new RuntimeException("Failed to configure MercadoPago SDK", e);
         }
     }
