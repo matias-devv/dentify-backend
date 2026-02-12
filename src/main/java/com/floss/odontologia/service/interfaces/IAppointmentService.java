@@ -2,7 +2,13 @@ package com.floss.odontologia.service.interfaces;
 
 import com.floss.odontologia.dto.request.appointment.CreateAppointmentRequestDTO;
 import com.floss.odontologia.dto.response.appointment.CreateAppointmentResponseDTO;
+import com.floss.odontologia.enums.AppointmentStatus;
 import com.floss.odontologia.model.Appointment;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 public interface IAppointmentService {
 
@@ -10,4 +16,24 @@ public interface IAppointmentService {
     public Appointment getAppointmentById(Long id);
 
     public CreateAppointmentResponseDTO saveAppointmentWithPay(CreateAppointmentRequestDTO request);
+
+    public void actualizeAppointmentStatusToConfirmed(Appointment appointment);
+
+    public void cancelAppointment( AppointmentStatus typeOfCancellation, Appointment appointment, String message);
+
+    public List<Appointment> findByDateBeforeAndAppointmentStatusIn(LocalDate targetDate, List<AppointmentStatus> statuses);
+
+    public void markNoShow(Appointment appointment);
+
+    public List<Appointment> findByAppointmentStatusAndDate(LocalDate targetDate, AppointmentStatus appointmentStatus);
+
+    List<Appointment> findByAppointmentStatusAndDateBetween(AppointmentStatus status, LocalDate startDate, LocalDate finalDate);
+
+    List<Appointment> findScheduledAppointmentsBetween(LocalTime startTime, LocalTime finalTime);
+
+    List<Appointment> findReservedAppointmentsNotConfirmed(LocalDateTime startDate, LocalDateTime finalDate);
+
+    List<Appointment> findReservedAppointmentsConfirmed(LocalTime startTime, LocalTime finalTime);
+
+    List<Appointment> findByDateLessThanEqualAndAppointmentStatusIn(LocalDate today, List<AppointmentStatus> scheduled);
 }
