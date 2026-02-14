@@ -1,4 +1,10 @@
 package com.dentify.integration.mercadopago.dto;
 
-public record WebhookData() {
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class WebhookData {
+    private String id;
 }
