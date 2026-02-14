@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 /**
  * MercadoPago SDK Configuration
@@ -30,15 +30,27 @@ public class MercadoPagoConfiguration {
      */
     @PostConstruct
     public void init() {
+
         try {
+            log.info("🚀 Iniciando configuración de MercadoPago SDK...");
+
+            //validate if exists
+            if (accessToken == null || accessToken.isBlank()) {
+                throw new RuntimeException("MercadoPago Access Token is required");
+            }
+
+            //verify type of token
+            String tokenType = accessToken.startsWith("TEST-") ? "TEST" : "PRODUCTION";
+            log.info("🔑 Token type: {}", tokenType);
+            log.info("🔑 Token preview: {}***", accessToken.substring(0, Math.min(15, accessToken.length())));
+
             // Set the access token globally for all MercadoPago API calls
             MercadoPagoConfig.setAccessToken(accessToken);
 
-            log.info("MercadoPago SDK configured successfully");
-            log.info("Access Token: {}***", accessToken.substring(0, Math.min(10, accessToken.length())));
+            log.info("✅ MercadoPago SDK configured successfully");
 
         } catch (Exception e) {
-            log.error("Error configuring MercadoPago SDK", e);
+            log.error("💥 Error configurando MercadoPago SDK", e);
             throw new RuntimeException("Failed to configure MercadoPago SDK", e);
         }
     }
