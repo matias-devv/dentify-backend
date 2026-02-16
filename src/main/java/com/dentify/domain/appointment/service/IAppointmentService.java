@@ -7,6 +7,7 @@ import com.dentify.domain.appointment.enums.AppointmentStatus;
 import com.dentify.domain.appointment.model.Appointment;
 import com.dentify.domain.schedule.model.Schedule;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,4 +47,6 @@ public interface IAppointmentService {
     Map<LocalDateTime,Appointment> fillInAppointmentMap(List<Appointment> listAppointments);
 
     List<Appointment> findAppointmentsByAgendaAndDateRange(Long idAgenda, @NotBlank LocalDate startDate, @NotBlank LocalDate endDate);
+
+    List<Appointment> findAppointmentsByAgendaAndDate(  Long agendaId, LocalDate date);
 }

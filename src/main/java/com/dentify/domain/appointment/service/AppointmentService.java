@@ -244,6 +244,11 @@ public class AppointmentService implements IAppointmentService {
         return appointmentRepository.findAppointmentsByAgendaAndDateRange( idAgenda, startDate, endDate );
     }
 
+    @Override
+    public List<Appointment> findAppointmentsByAgendaAndDate(Long agendaId, LocalDate date) {
+        return appointmentRepository.findAppointmentsByAgendaAndDate(agendaId, date);
+    }
+
     private CreateAppointmentResponseDTO buildResponse(Patient patient, Product product, Pay pay, Treatment treatment,
                                                        CreateAppointmentRequestDTO request, Appointment appointment, String paymentLink) {
         return CreateAppointmentResponseDTO.builder()

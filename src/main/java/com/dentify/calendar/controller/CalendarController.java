@@ -1,7 +1,9 @@
 package com.dentify.calendar.controller;
 
-import com.dentify.calendar.dto.request.WeekRequest;
-import com.dentify.calendar.dto.response.WeekResponse;
+import com.dentify.calendar.dto.request.day.DetailedDayRequest;
+import com.dentify.calendar.dto.request.week.WeekRequest;
+import com.dentify.calendar.dto.response.day.DetailedDayResponse;
+import com.dentify.calendar.dto.response.week.WeekResponse;
 import com.dentify.calendar.service.ICalendarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +29,8 @@ public class CalendarController {
      * get slots by day
      **/
     @GetMapping("/day/slots")
-    public ResponseEntity<WeekResponse> getDailySlots( @RequestBody WeekRequest request) {
-        WeekResponse response = calendarService.getWeeklySlots(request);
+    public ResponseEntity<DetailedDayResponse> getDailySlots(@RequestBody DetailedDayRequest request) {
+        DetailedDayResponse response = calendarService.getDailySlots(request);
         return ResponseEntity.ok().body(response);
     }
 }

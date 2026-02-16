@@ -63,4 +63,13 @@ public interface IAppointmentRepository extends JpaRepository<Appointment, Long>
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    @Query("SELECT app FROM Appointment app " +
+            "JOIN FETCH app.patient " +
+            "WHERE app.agenda.id_agenda = :agendaId " +
+            "AND app.date = :date")
+    List<Appointment> findAppointmentsByAgendaAndDate(
+            @Param("agendaId") Long agendaId,
+            @Param("date") LocalDate date
+    );
 }

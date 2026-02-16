@@ -1,6 +1,7 @@
 package com.dentify.domain.agenda.service;
 
-import com.dentify.calendar.dto.request.WeekRequest;
+import com.dentify.calendar.dto.request.day.DetailedDayRequest;
+import com.dentify.calendar.dto.request.week.WeekRequest;
 import com.dentify.calendar.dto.response.*;
 import com.dentify.domain.agenda.dto.AgendaRequestDTO;
 import com.dentify.domain.agenda.dto.AgendaResponseDTO;
@@ -8,7 +9,6 @@ import com.dentify.domain.agenda.model.Agenda;
 import com.dentify.domain.agenda.repository.IAgendaRepository;
 import com.dentify.domain.appointment.model.Appointment;
 import com.dentify.calendar.dto.request.MonthDateRangeRequestDTO;
-import com.dentify.calendar.dto.response.*;
 import com.dentify.domain.appointment.dto.AppointmentResponseDTO;
 import com.dentify.domain.agenda.enums.AvailabilityState;
 import com.dentify.domain.product.model.Product;
@@ -20,7 +20,6 @@ import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -190,13 +189,31 @@ public class AgendaService implements IAgendaService {
     }
 
     @Override
-    public void isWeekWithinAgendaRange(Agenda agenda, WeekRequest request) {
+    public void validateWeekWithinAgendaRange(Agenda agenda, WeekRequest request) {
 
-        boolean okDateRangeAgenda = this.checkDateRangeAgenda( agenda, request.startDate(), request.endDate() );
+        boolean okDateRangeAgenda = this.isWeekWithinAgendaRange( agenda, request.startDate(), request.endDate() );
 
         if (!okDateRangeAgenda) {
-            throw new RuntimeException("The valid range of the schedule ends before the requested end date.");
+            throw new RuntimeException("The requested dates are not in the valid range defined in the calendar.");
         }
+    }
+
+    public boolean isWeekWithinAgendaRange(Agenda agenda, @NotBlank LocalDate startDate, @NotBlank LocalDate endDate) {
+        return agenda.getStart_date().isBefore(startDate) && agenda.getFinal_date().isAfter(endDate);
+    }
+
+    @Override
+    public void validateDateWithinAgendaRange(Agenda agenda, LocalDate requestedDate) {
+
+        boolean okDateRangeAgenda = this.isDayWithinAgendaRange( agenda, requestedDate );
+
+        if (!okDateRangeAgenda) {
+            throw new RuntimeException("The requested date it's not in the valid range defined in the agenda.");
+        }
+    }
+
+    private boolean isDayWithinAgendaRange(Agenda agenda, LocalDate requestedDate) {
+        return agenda.getStart_date().isBefore(requestedDate) && agenda.getFinal_date().isAfter(requestedDate);
     }
 
     @Override
@@ -204,9 +221,6 @@ public class AgendaService implements IAgendaService {
         return agendaRepository.findAgendaWithSchedules(idAgenda);
     }
 
-    public boolean checkDateRangeAgenda(Agenda agenda, @NotBlank LocalDate startDate, @NotBlank LocalDate endDate) {
-        return agenda.getStart_date().isBefore(startDate) && agenda.getFinal_date().isAfter(endDate);
-    }
     //
 //    @Override
 //    public List<AgendaResponseDTO> findAgendasByUser(Long idUserApp) {
