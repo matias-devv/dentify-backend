@@ -51,4 +51,16 @@ public interface IAppointmentRepository extends JpaRepository<Appointment, Long>
     @Query("SELECT a FROM Appointment a WHERE a.date <= :date AND a.appointmentStatus IN :statuses")
     List<Appointment> findByDateLessThanEqualAndAppointmentStatusIn(@Param("date") LocalDate date, @Param("statuses") List<AppointmentStatus> statuses );
 
+    Appointment findByDateAndStartTime(LocalDate date, LocalTime startTime);
+
+    // Query 2: Traer solo los appointments filtrados
+    @Query("SELECT app FROM Appointment app " +
+            "JOIN FETCH app.patient " +
+            "WHERE app.agenda.id_agenda = :agendaId " +
+            "AND app.date BETWEEN :startDate AND :endDate")
+    List<Appointment> findAppointmentsByAgendaAndDateRange(
+            @Param("agendaId") Long agendaId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

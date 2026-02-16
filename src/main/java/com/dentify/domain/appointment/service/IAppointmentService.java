@@ -1,14 +1,18 @@
 package com.dentify.domain.appointment.service;
 
+import com.dentify.domain.agenda.model.Agenda;
 import com.dentify.domain.appointment.dto.CreateAppointmentRequestDTO;
 import com.dentify.domain.appointment.dto.CreateAppointmentResponseDTO;
 import com.dentify.domain.appointment.enums.AppointmentStatus;
 import com.dentify.domain.appointment.model.Appointment;
+import com.dentify.domain.schedule.model.Schedule;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 public interface IAppointmentService {
 
@@ -36,4 +40,10 @@ public interface IAppointmentService {
     List<Appointment> findReservedAppointmentsConfirmed(LocalTime startTime, LocalTime finalTime);
 
     List<Appointment> findByDateLessThanEqualAndAppointmentStatusIn(LocalDate today, List<AppointmentStatus> scheduled);
+
+    Appointment findForTheAppointmentOnTheMapByDateAndTime(Map<LocalDateTime, Appointment> mapAppointments, LocalDateTime requestedTimeAndDate);
+
+    Map<LocalDateTime,Appointment> fillInAppointmentMap(List<Appointment> listAppointments);
+
+    List<Appointment> findAppointmentsByAgendaAndDateRange(Long idAgenda, @NotBlank LocalDate startDate, @NotBlank LocalDate endDate);
 }

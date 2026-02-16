@@ -1,5 +1,6 @@
 package com.dentify.domain.agenda.service;
 
+import com.dentify.calendar.dto.request.WeekRequest;
 import com.dentify.calendar.dto.response.*;
 import com.dentify.domain.agenda.dto.AgendaRequestDTO;
 import com.dentify.domain.agenda.dto.AgendaResponseDTO;
@@ -19,11 +20,13 @@ import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AgendaService implements IAgendaService {
@@ -185,7 +188,26 @@ public class AgendaService implements IAgendaService {
         agenda.setDuration_minutes( agendaRequestDTO.duration_minutes());
         return agenda;
     }
-//
+
+    @Override
+    public void isWeekWithinAgendaRange(Agenda agenda, WeekRequest request) {
+
+        boolean okDateRangeAgenda = this.checkDateRangeAgenda( agenda, request.startDate(), request.endDate() );
+
+        if (!okDateRangeAgenda) {
+            throw new RuntimeException("The valid range of the schedule ends before the requested end date.");
+        }
+    }
+
+    @Override
+    public Optional<Agenda> findAgendaWithSchedules(Long idAgenda) {
+        return agendaRepository.findAgendaWithSchedules(idAgenda);
+    }
+
+    public boolean checkDateRangeAgenda(Agenda agenda, @NotBlank LocalDate startDate, @NotBlank LocalDate endDate) {
+        return agenda.getStart_date().isBefore(startDate) && agenda.getFinal_date().isAfter(endDate);
+    }
+    //
 //    @Override
 //    public List<AgendaResponseDTO> findAgendasByUser(Long idUserApp) {
 //
@@ -373,66 +395,10 @@ public class AgendaService implements IAgendaService {
                                          slots);
     }
 
-    private boolean CheckDayDateInAgenda(Agenda agenda, LocalDate requestDate) {
+    public boolean checkDayDateInAgenda(Agenda agenda, LocalDate requestDate) {
         return agenda.getStart_date().isBefore(requestDate) && agenda.getFinal_date().isAfter(requestDate);
     }
-//
-//    @Override
-//    public @Nullable WeekSummaryResponseDTO getAvailableSlotsInWeek(WeekDateRangeRequestDTO weekDateRange) {
-//
-//        Optional<Agenda> agenda = agendaRepository.findById(weekDateRange.id_agenda());
-//
-//        if (agenda.isEmpty()) {
-//            return null;
-//        }
-//        List<Schedule> agendaSchedules = agenda.get().getSchedules();
-//        List<Appointment> appointments = agenda.get().getAppointments();
-//        List<EventResponseDTO> eventList = new ArrayList<>();
-//
-//        boolean okDateRangeAgenda = CheckDateRangeAgenda(agenda.get(),
-//                                                         weekDateRange.startDate(),
-//                                                         weekDateRange.endDate());
-//
-//        if (okDateRangeAgenda == false) {
-//            return null;
-//        }
-//
-//        LocalDate startDate = weekDateRange.startDate();
-//
-//        List<LocalDate> dates = startDate.datesUntil( weekDateRange.endDate() ).toList();
-//
-//        //filtramos por dia semana
-//        //necesito convertir datos del schedule en 1 evento
-//        //necesito verificar que no este ocupado
-//        //si esta ocupado lo tengo que traer al paciente, marcar el id del turno
-//        for (Schedule schedule : agendaSchedules) {
-//
-//            List<Day> listDays = schedule.getDays();
-//
-//            for (LocalDate date : dates) {
-//
-//                for ( Day day : listDays ) {
-//
-//                    if( day.getDayOfWeek().equals( date.getDayOfWeek() ) ) {
-//
-//                        if ( appointments != null && !appointments.isEmpty() ){
-//
-//                            for (Appointment appointment : appointments) {
-//
-//                                if (appointment.getDate().equals(date)) {
-//
-//                                    eventList.add(this.convertToBusyEventDTO(date, schedule, appointment));
-//                                }
-//                            }
-//                        }
-//                        eventList.add( this.convertToEventFreeDTO(date, schedule) );
-//                    }
-//                }
-//            }
-//        }
-//        return this.convertToWeekResponseDTO(agenda.get(), eventList);
-//
-//    }
+
 //
 //    @Override
 //    public @Nullable MonthSummaryResponseDTO getSummaryOfTheMonth(MonthDateRangeRequestDTO request) {
@@ -560,17 +526,13 @@ public class AgendaService implements IAgendaService {
                                     null);
     }
 
-    private WeekSummaryResponseDTO convertToWeekResponseDTO(Agenda agenda, List<EventResponseDTO> events) {
-        return new WeekSummaryResponseDTO(agenda.getId_agenda(),
-                                            agenda.getAgenda_name(),
-                                            agenda.getStart_date(),
-                                            agenda.getFinal_date(),
-                                            events);
-    }
-
-    private boolean CheckDateRangeAgenda(Agenda agenda, @NotBlank LocalDate startDate, @NotBlank LocalDate endDate) {
-        return agenda.getStart_date().isBefore(startDate) && agenda.getFinal_date().isAfter(endDate);
-    }
+//    private WeekSummaryResponseDTO convertToWeekResponseDTO(Agenda agenda, List<EventResponseDTO> events) {
+//        return new WeekSummaryResponseDTO(agenda.getId_agenda(),
+//                                            agenda.getAgenda_name(),
+//                                            agenda.getStart_date(),
+//                                            agenda.getFinal_date(),
+//                                            events);
+//    }
 
     private AgendaResponseDTO convertEntityToDto(Agenda agenda) {
         return new AgendaResponseDTO(agenda.getId_agenda(),

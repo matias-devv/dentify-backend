@@ -1,5 +1,6 @@
 package com.dentify.domain.agenda.service;
 
+import com.dentify.calendar.dto.request.WeekRequest;
 import com.dentify.domain.agenda.dto.AgendaRequestDTO;
 import com.dentify.domain.agenda.model.Agenda;
 import com.dentify.domain.user.model.AppUser;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
 public interface IAgendaService {
 
@@ -25,6 +27,10 @@ public interface IAgendaService {
     void verifyIfThisAgendaBelongsToTheDentist(Agenda agenda, AppUser dentist);
 
     void validateCreateAppointment(Agenda agenda, AppUser dentist, Product product, @NotBlank(message = "The date is mandatory") @Future(message = "The date must be in the future.") LocalDate date, @NotBlank(message = "The start time is mandatory") LocalTime starTime);
+
+    void isWeekWithinAgendaRange(Agenda agenda, WeekRequest request);
+
+    Optional<Agenda> findAgendaWithSchedules(@NotBlank Long idAgenda);
 //
 //    public String patchStatusAgenda(AgendaRequestDTO agendaRequestDTO);
 //

@@ -17,6 +17,7 @@ import com.dentify.domain.product.model.Product;
 import com.dentify.domain.product.service.IProductService;
 import com.dentify.domain.receipt.model.Receipt;
 import com.dentify.domain.receipt.service.IReceiptService;
+import com.dentify.domain.schedule.model.Schedule;
 import com.dentify.integration.email.EmailService;
 import com.dentify.integration.email.GenerateMailTokenService;
 import com.dentify.integration.mercadopago.MercadoPagoService;
@@ -32,7 +33,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -215,6 +218,31 @@ public class AppointmentService implements IAppointmentService {
         return appointmentRepository.findByDateLessThanEqualAndAppointmentStatusIn(today, scheduled);
     }
 
+    @Override
+    public Appointment findForTheAppointmentOnTheMapByDateAndTime(Map<LocalDateTime, Appointment> mapAppointments, LocalDateTime requestedTimeAndDate) {
+        return mapAppointments.get(requestedTimeAndDate);
+    }
+
+    @Override
+    public Map<LocalDateTime, Appointment> fillInAppointmentMap(List<Appointment> listAppointments) {
+
+        Map<LocalDateTime, Appointment> mapAppointments = new HashMap<>();
+
+        if ( listAppointments != null) {
+
+            listAppointments.forEach(appo -> {
+                                                            LocalDateTime fullTime = appo.getDate().atTime(appo.getStartTime());
+                                                            mapAppointments.put(fullTime, appo);
+                                                         }
+                                                         );
+        }
+        return mapAppointments;
+    }
+
+    @Override
+    public List<Appointment> findAppointmentsByAgendaAndDateRange( Long idAgenda, LocalDate startDate, LocalDate endDate) {
+        return appointmentRepository.findAppointmentsByAgendaAndDateRange( idAgenda, startDate, endDate );
+    }
 
     private CreateAppointmentResponseDTO buildResponse(Patient patient, Product product, Pay pay, Treatment treatment,
                                                        CreateAppointmentRequestDTO request, Appointment appointment, String paymentLink) {
