@@ -1,18 +1,23 @@
 package com.dentify.calendar.service;
 
 import com.dentify.calendar.dto.request.day.DetailedDayRequest;
+import com.dentify.calendar.dto.request.month.MonthRequest;
 import com.dentify.calendar.dto.request.week.WeekRequest;
 import com.dentify.calendar.dto.response.*;
 import com.dentify.calendar.dto.response.day.DetailedDayResponse;
 import com.dentify.calendar.dto.response.day.DetailedSlotResponse;
+import com.dentify.calendar.dto.response.month.DailySummaryResponse;
+import com.dentify.calendar.dto.response.month.MonthResponse;
 import com.dentify.calendar.dto.response.week.DayResponse;
 import com.dentify.calendar.dto.response.week.SlotResponse;
 import com.dentify.calendar.dto.response.week.WeekResponse;
+import com.dentify.domain.agenda.enums.AvailabilityState;
 import com.dentify.domain.agenda.model.Agenda;
 import com.dentify.domain.agenda.service.IAgendaService;
 import com.dentify.domain.appointment.model.Appointment;
 import com.dentify.domain.appointment.service.IAppointmentService;
 import com.dentify.domain.schedule.model.Schedule;
+import com.dentify.domain.schedule.service.IScheduleService;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.time.format.TextStyle;
 import java.util.*;
 
 @Service
@@ -28,6 +34,114 @@ public class CalendarService implements ICalendarService{
 
     private final IAgendaService agendaService;
     private final IAppointmentService appointmentService;
+
+    @Override
+    public MonthResponse getMonthlySummary(MonthRequest request) {
+
+        List<DailySummaryResponse> days = new ArrayList<>();
+
+        Optional<Agenda> agenda = agendaService.findAgendaWithSchedules( request.id_agenda() );
+
+        agendaService.validateIfTheAgendaExists(agenda);
+        agendaService.validateIfAgendaIsActive(agenda.get());
+
+        YearMonth yearMonth = YearMonth.of( request.year(), Month.of( request.month_number() ) );
+
+        LocalDate firstDate = yearMonth.atDay(1);
+        LocalDate finalDate = yearMonth.atEndOfMonth();
+
+        agendaService.validateDateRangeInAgenda( agenda.get(), firstDate, finalDate);
+
+        List< Appointment> appointments = appointmentService.findAppointmentsByAgendaAndDateRange( agenda.get().getId_agenda(), firstDate, finalDate);
+
+        Map< LocalDateTime, Appointment> mapAppointments = appointmentService.fillInAppointmentMap( appointments );
+
+        Map< DayOfWeek, List<Schedule> > mapDays = agenda.get().fillMapDays();
+
+        List<LocalDate> dates = firstDate.datesUntil( finalDate.plusDays(1) ).toList();
+
+        for( LocalDate date : dates ) {
+
+            DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+            List<Schedule> schedulesForDay = mapDays.get(dayOfWeek);
+
+            DailySummaryResponse response = (schedulesForDay != null)
+                            ? buildDailySummaryForMultipleSchedules(date, schedulesForDay, mapAppointments)
+                            : buildNonWorkingDay(date);
+
+
+            days.add(response);
+        }
+
+        return this.buildMonthResponse( agenda.get(), yearMonth, days);
+    }
+
+    private DailySummaryResponse buildDailySummaryForMultipleSchedules(LocalDate date, List<Schedule> schedulesForDay,
+                                                                       Map<LocalDateTime, Appointment> mapAppointments) {
+
+        int freeSlots = 0;
+        int occupiedSlots = 0;
+
+        for (Schedule schedule : schedulesForDay) {
+
+            List<DetailedSlotResponse> slots = calculateDetailedSlotsListForThisSchedule(date, schedule, mapAppointments);
+
+            freeSlots += this.countAvailableSlots(slots);
+            occupiedSlots += this.countOcuppiedSlots(slots);
+        }
+
+        int totalSlots = freeSlots + occupiedSlots;
+
+        AvailabilityState state = calculateAvailabilityState(freeSlots, totalSlots);
+
+        return new DailySummaryResponse(date,
+                                        date.getDayOfMonth(),
+                                        date.getDayOfWeek(),
+                                        freeSlots,
+                                        occupiedSlots,
+                                        totalSlots,
+                                        state);
+    }
+
+    private DailySummaryResponse buildNonWorkingDay(LocalDate date) {
+        return new DailySummaryResponse(date,
+                                        date.getDayOfMonth(),
+                                        date.getDayOfWeek(),
+                                        0,
+                                        0,
+                                        0,
+                                        AvailabilityState.NO_SCHEDULE);
+    }
+
+    private AvailabilityState calculateAvailabilityState(Integer freeSlots, Integer totalSlots) {
+
+        if (totalSlots == 0) {
+            return AvailabilityState.NO_SCHEDULE;
+        }
+
+        if (freeSlots == 0) {
+            return AvailabilityState.FULL;
+        }
+
+        double percentage = (freeSlots * 100.0) / totalSlots;
+
+        if (percentage < 30.0) {
+            return AvailabilityState.LOW_AVAILABILITY;
+        }
+
+        return AvailabilityState.AVAILABLE;
+    }
+
+    private MonthResponse buildMonthResponse( Agenda agenda, YearMonth yearMonth, List<DailySummaryResponse> days) {
+        return new MonthResponse(agenda.getId_agenda(),
+                                 yearMonth.getYear(),
+                                 yearMonth.getMonth().getValue(),
+                                 yearMonth.getMonth().getDisplayName(TextStyle.FULL, new Locale("es")),
+                                 agenda.getProduct().getName_product(),
+                                 agenda.getDuration_minutes(),
+                                 days);
+    }
 
     @Override
     public @Nullable WeekResponse getWeeklySlots(WeekRequest request) {
@@ -39,7 +153,7 @@ public class CalendarService implements ICalendarService{
             throw new RuntimeException("The agenda was not found");
         }
 
-        agendaService.validateWeekWithinAgendaRange( agenda.get(), request);
+        agendaService.validateDateRangeInAgenda( agenda.get(), request.startDate(), request.endDate());
 
         List<Appointment> appointments = appointmentService.findAppointmentsByAgendaAndDateRange( agenda.get().getId_agenda(), request.startDate(), request.endDate());
 
@@ -150,7 +264,7 @@ public class CalendarService implements ICalendarService{
 
             if ( schedule.getDays().contains( dayOfWeek ) ){
 
-                slots.addAll( this.buildListOfDetailedSlots( request.startDate(), schedule, mapAppointments) );
+                slots.addAll( this.calculateDetailedSlotsListForThisSchedule( request.startDate(), schedule, mapAppointments) );
 
             }
         }
@@ -162,9 +276,8 @@ public class CalendarService implements ICalendarService{
         return this.buildDetailedDayResponse( agenda.get(), slots, request.startDate(), totalSlots, freeSlots, ocuppiedSlots);
     }
 
-    private List<DetailedSlotResponse> buildListOfDetailedSlots(LocalDate date, Schedule schedule,
-                                                                Map<LocalDateTime, Appointment> mapAppointments) {
-
+    private List<DetailedSlotResponse> calculateDetailedSlotsListForThisSchedule(LocalDate date, Schedule schedule,
+                                                                            Map<LocalDateTime, Appointment> mapAppointments) {
 
         List<DetailedSlotResponse> slots = new ArrayList<>();
 
@@ -241,15 +354,4 @@ public class CalendarService implements ICalendarService{
     }
 
 
-//    private WeekResponse convertToWeekResponseDTO(Agenda agenda, List<EventResponse> events) {
-//       WeekResponse response = new WeekResponse(agenda.getId_agenda(),
-//                                    agenda.getAgenda_name(),
-//                                    agenda.getStart_date(),
-//                                    agenda.getFinal_date()
-////                                    events
-//                                    );
-//
-//        System.out.println(response.toString());
-//        return response;
-//    }
 }
