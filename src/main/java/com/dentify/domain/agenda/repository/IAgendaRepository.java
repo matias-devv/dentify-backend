@@ -15,9 +15,7 @@ import java.util.Optional;
 @Repository
 public interface IAgendaRepository extends JpaRepository<Agenda, Long> {
 
-    // Query 1: Traer agenda con schedules
-    @EntityGraph(attributePaths = {"schedules"})
+    @EntityGraph(attributePaths = {"schedules", "schedules.days", "product"})
     @Query("SELECT a FROM Agenda a WHERE a.id_agenda = :id")
     Optional<Agenda> findAgendaWithSchedules(@Param("id") Long id);
-
 }
