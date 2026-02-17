@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IAppointmentRepository extends JpaRepository<Appointment, Long> {
@@ -76,4 +77,15 @@ public interface IAppointmentRepository extends JpaRepository<Appointment, Long>
             @Param("agendaId") Long agendaId,
             @Param("date") LocalDate date
     );
+
+    @Query("SELECT DISTINCT app FROM Appointment app " +
+            "JOIN FETCH app.patient " +
+            "JOIN FETCH app.app_user au " +
+            "LEFT JOIN FETCH au.specialities " +
+            "JOIN FETCH app.agenda " +
+            "LEFT JOIN FETCH app.treatment t " +
+            "LEFT JOIN FETCH t.product " +
+            "LEFT JOIN FETCH app.pays " +
+            "WHERE app.id_appointment = :id")
+    Optional<Appointment> findByIdWithAllDetails(@Param("id") Long id);
 }
