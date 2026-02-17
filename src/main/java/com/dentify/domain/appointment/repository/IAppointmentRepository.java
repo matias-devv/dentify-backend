@@ -56,7 +56,8 @@ public interface IAppointmentRepository extends JpaRepository<Appointment, Long>
     @Query("SELECT app FROM Appointment app " +
             "JOIN FETCH app.patient " +
             "JOIN FETCH app.app_user " +
-            "LEFT JOIN FETCH app.treatment " +
+            "LEFT JOIN FETCH app.treatment t " +
+            "LEFT JOIN FETCH t.product " +
             "WHERE app.agenda.id_agenda = :agendaId " +
             "AND app.date BETWEEN :startDate AND :endDate")
     List<Appointment> findAppointmentsByAgendaAndDateRange(

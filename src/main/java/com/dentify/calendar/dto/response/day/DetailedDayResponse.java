@@ -6,7 +6,7 @@ import java.util.List;
 
 public record DetailedDayResponse(Long id_agenda,
                                   Long id_product,
-                                  LocalDate startDate,
+                                  LocalDate date,
                                   DayOfWeek dayOfWeek,
                                   int durationMinutes,
                                   //optional

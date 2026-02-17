@@ -1,22 +1,13 @@
 package com.dentify.domain.agenda.service;
 
-import com.dentify.calendar.dto.request.day.DetailedDayRequest;
-import com.dentify.calendar.dto.request.week.WeekRequest;
-import com.dentify.calendar.dto.response.*;
 import com.dentify.domain.agenda.dto.AgendaRequestDTO;
-import com.dentify.domain.agenda.dto.AgendaResponseDTO;
 import com.dentify.domain.agenda.model.Agenda;
 import com.dentify.domain.agenda.repository.IAgendaRepository;
-import com.dentify.domain.appointment.model.Appointment;
-import com.dentify.calendar.dto.request.MonthDateRangeRequestDTO;
-import com.dentify.domain.appointment.dto.AppointmentResponseDTO;
-import com.dentify.domain.agenda.enums.AvailabilityState;
 import com.dentify.domain.product.model.Product;
 import com.dentify.domain.product.service.IProductService;
 import com.dentify.domain.schedule.model.Schedule;
 import com.dentify.domain.user.model.AppUser;
 import com.dentify.domain.user.service.IUserService;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +15,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 @Service

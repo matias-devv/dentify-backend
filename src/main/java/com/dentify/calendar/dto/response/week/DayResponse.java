@@ -6,5 +6,6 @@ import java.util.List;
 
 public record DayResponse(LocalDate date,
                           DayOfWeek dayOfWeek,
+                          boolean isWorkingDay,
                           List<SlotResponse> slots) {
 }

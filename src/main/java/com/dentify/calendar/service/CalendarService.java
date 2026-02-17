@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -58,6 +59,7 @@ public class CalendarService implements ICalendarService{
 
         Map< DayOfWeek, List<Schedule> > mapDays = agenda.get().fillMapDays();
 
+        //Add 1 day so that it does not exclude the last day
         List<LocalDate> dates = firstDate.datesUntil( finalDate.plusDays(1) ).toList();
 
         for( LocalDate date : dates ) {
@@ -147,6 +149,7 @@ public class CalendarService implements ICalendarService{
     public @Nullable WeekResponse getWeeklySlots(WeekRequest request) {
 
         List<DayResponse> dayResponses = new ArrayList<>();
+
         Optional<Agenda> agenda = agendaService.findAgendaWithSchedules( request.id_agenda() );
 
         if ( agenda.isEmpty() ) {
@@ -159,32 +162,61 @@ public class CalendarService implements ICalendarService{
 
         Map<LocalDateTime, Appointment> mapAppointments = appointmentService.fillInAppointmentMap( appointments );
 
-        LocalDate startDate = request.startDate();
+        //Add 1 day so that it does not exclude the last day
+        List<LocalDate> dates = request.startDate().datesUntil( request.endDate().plusDays(1) ).toList();
 
-        List<LocalDate> dates = startDate.datesUntil( request.endDate() ).toList();
+        Map< DayOfWeek, List<Schedule> > mapDays = agenda.get().fillMapDays();
 
-        //filtramos por dia semana
-        //necesito convertir datos del schedule en 1 evento
-        //necesito verificar que no este ocupado
-        //si esta ocupado lo tengo que traer al paciente, marcar el id del turno
         for( LocalDate date : dates ) {
 
             DayOfWeek dayOfWeek = date.getDayOfWeek();
 
-            for( Schedule schedule : agenda.get().getSchedules() ){
+            List<Schedule> schedulesForDay = mapDays.get(dayOfWeek);
 
-                if( schedule.getDays().contains(dayOfWeek) ){
+            if(schedulesForDay != null) {
 
-                    DayResponse dayResponse = this.buildDayResponse(date, schedule, mapAppointments);
+                    DayResponse response =  this.buildDayResponseListForMultipleSchedules( date, schedulesForDay, mapAppointments);
 
-                    dayResponses.add(dayResponse);
-                }
+                    dayResponses.add(response);
+            }else{
+                    dayResponses.add( new DayResponse( date, date.getDayOfWeek(), false, null) );
             }
         }
-        WeekResponse response = this.buildWeekResponse( agenda.get(), dayResponses);
 
-        return response;
+        return this.buildWeekResponse( agenda.get(), dayResponses);
     }
+
+    private DayResponse buildDayResponseListForMultipleSchedules( LocalDate date, List<Schedule> schedulesForDay,
+                                                                  Map<LocalDateTime, Appointment> mapAppointments) {
+
+        List<SlotResponse> slots = new ArrayList<>();
+
+        List<Schedule> orderedList = this.orderSchedulesList(schedulesForDay);
+
+        for ( Schedule schedule : orderedList) {
+
+                List<SlotResponse> newSlots = calculateSlotsResponsesListForThisSchedule( date, schedule, mapAppointments);
+
+                slots.addAll(newSlots);
+        }
+        return new DayResponse(date,
+                               date.getDayOfWeek(),
+                              true,
+                               slots);
+    }
+
+    private List<Schedule>  orderSchedulesList(List<Schedule> schedulesForDay) {
+
+        //Hour of reference 6:00 am
+        LocalTime sixAm = LocalTime.of(6,0);
+
+        //Sort: Nearest first
+        schedulesForDay.sort( Comparator.comparingLong(s -> Math.abs( ChronoUnit.MINUTES.between( sixAm, s.getStart_time() ) ) ) );
+
+        //Reference time example: 6:00 am, result: [09:30, 11:00, 14:00, 18:45]
+       return schedulesForDay;
+    }
+
 
     private WeekResponse buildWeekResponse(Agenda agenda, List<DayResponse> dayResponses) {
         return new WeekResponse(agenda.getId_agenda(),
@@ -194,16 +226,7 @@ public class CalendarService implements ICalendarService{
                                 dayResponses);
     }
 
-    private DayResponse buildDayResponse(LocalDate date, Schedule schedule, Map<LocalDateTime, Appointment> mapAppointments) {
-
-        List<SlotResponse> slots = this.calculateSlotsForThisDay( date, schedule, mapAppointments);
-
-        return new DayResponse(date,
-                               date.getDayOfWeek(),
-                               slots );
-    }
-
-    private List<SlotResponse> calculateSlotsForThisDay( LocalDate date, Schedule schedule, Map<LocalDateTime, Appointment> mapAppointments) {
+    private List<SlotResponse> calculateSlotsResponsesListForThisSchedule( LocalDate date, Schedule schedule, Map<LocalDateTime, Appointment> mapAppointments) {
 
         List<SlotResponse> slots = new ArrayList<>();
 
