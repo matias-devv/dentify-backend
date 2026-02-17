@@ -1,8 +1,10 @@
 package com.dentify.calendar.controller;
 
 import com.dentify.calendar.dto.request.day.DetailedDayRequest;
+import com.dentify.calendar.dto.request.month.MonthRequest;
 import com.dentify.calendar.dto.request.week.WeekRequest;
 import com.dentify.calendar.dto.response.day.DetailedDayResponse;
+import com.dentify.calendar.dto.response.month.MonthResponse;
 import com.dentify.calendar.dto.response.week.WeekResponse;
 import com.dentify.calendar.service.ICalendarService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,15 @@ import org.springframework.web.bind.annotation.*;
 public class CalendarController {
 
     private final ICalendarService calendarService;
+
+    /**
+     * get monthly summary
+     **/
+    @GetMapping("/monthly/slots")
+    public ResponseEntity<MonthResponse> GetMonthlySummary(@RequestBody MonthRequest request) {
+        MonthResponse response = calendarService.getMonthlySummary(request);
+        return ResponseEntity.ok().body(response);
+    }
 
     /**
      * get slots by week
