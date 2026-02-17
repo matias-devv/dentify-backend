@@ -283,20 +283,30 @@ public class CalendarService implements ICalendarService{
 
         DayOfWeek dayOfWeek =  request.startDate().getDayOfWeek();
 
-        for ( Schedule schedule :  agenda.get().getSchedules() ) {
+        Map< DayOfWeek, List<Schedule> > mapDays = agenda.get().fillMapDays();
 
-            if ( schedule.getDays().contains( dayOfWeek ) ){
+        List<Schedule> schedulesForDay = mapDays.get(dayOfWeek);
 
-                slots.addAll( this.calculateDetailedSlotsListForThisSchedule( request.startDate(), schedule, mapAppointments) );
+        if(schedulesForDay != null) {
 
+            List<Schedule> orderedList = this.orderSchedulesList(schedulesForDay);
+
+            for (Schedule schedule : orderedList) {
+
+                List<DetailedSlotResponse> newSlots = this.calculateDetailedSlotsListForThisSchedule(request.startDate(), schedule, mapAppointments);
+
+                slots.addAll(newSlots);
             }
+
+            Integer freeSlots = this.countAvailableSlots(slots);
+            Integer ocuppiedSlots = this.countOcuppiedSlots(slots);
+            Integer totalSlots = freeSlots + ocuppiedSlots;
+
+            return this.buildDetailedDayResponse( agenda.get(), slots, request.startDate(), totalSlots, freeSlots, ocuppiedSlots, null);
         }
-
-        Integer freeSlots = this.countAvailableSlots(slots);
-        Integer ocuppiedSlots = this.countOcuppiedSlots(slots);
-        Integer totalSlots = freeSlots + ocuppiedSlots;
-
-        return this.buildDetailedDayResponse( agenda.get(), slots, request.startDate(), totalSlots, freeSlots, ocuppiedSlots);
+        else{
+            return this.buildDetailedDayResponse(agenda.get(), slots, request.startDate(), 0, 0, 0, "The day has no scheduled times");
+        }
     }
 
     private List<DetailedSlotResponse> calculateDetailedSlotsListForThisSchedule(LocalDate date, Schedule schedule,
@@ -363,7 +373,7 @@ public class CalendarService implements ICalendarService{
     }
 
     private DetailedDayResponse buildDetailedDayResponse(Agenda agenda, List<DetailedSlotResponse> slots, LocalDate requestedDate,
-                                                         Integer totalSlots, Integer freeSlots, Integer occupiedSlots) {
+                                                         Integer totalSlots, Integer freeSlots, Integer occupiedSlots, String message) {
         return new DetailedDayResponse(agenda.getId_agenda(),
                                        agenda.getProduct().getId_product(),
                                        requestedDate,
@@ -373,7 +383,8 @@ public class CalendarService implements ICalendarService{
                                        totalSlots,
                                        freeSlots,
                                        occupiedSlots,
-                                       slots );
+                                       slots ,
+                                       message );
     }
 
 
