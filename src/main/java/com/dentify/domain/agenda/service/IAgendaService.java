@@ -29,11 +29,13 @@ public interface IAgendaService {
 
     void validateCreateAppointment(Agenda agenda, AppUser dentist, Product product, @NotBlank(message = "The date is mandatory") @Future(message = "The date must be in the future.") LocalDate date, @NotBlank(message = "The start time is mandatory") LocalTime starTime);
 
-    void validateWeekWithinAgendaRange(Agenda agenda, WeekRequest request);
+    void validateDateRangeInAgenda(Agenda agenda, LocalDate startDate, LocalDate endDate);
 
     void validateDateWithinAgendaRange(Agenda agenda, LocalDate requestedDate);
 
     Optional<Agenda> findAgendaWithSchedules(@NotBlank Long idAgenda);
+
+    void validateIfTheAgendaExists(Optional<Agenda> agenda);
 
 //
 //    public String patchStatusAgenda(AgendaRequestDTO agendaRequestDTO);
