@@ -53,9 +53,10 @@ public interface IAppointmentRepository extends JpaRepository<Appointment, Long>
 
     Appointment findByDateAndStartTime(LocalDate date, LocalTime startTime);
 
-    // Query 2: Traer solo los appointments filtrados
     @Query("SELECT app FROM Appointment app " +
             "JOIN FETCH app.patient " +
+            "JOIN FETCH app.app_user " +
+            "LEFT JOIN FETCH app.treatment " +
             "WHERE app.agenda.id_agenda = :agendaId " +
             "AND app.date BETWEEN :startDate AND :endDate")
     List<Appointment> findAppointmentsByAgendaAndDateRange(
@@ -66,6 +67,8 @@ public interface IAppointmentRepository extends JpaRepository<Appointment, Long>
 
     @Query("SELECT app FROM Appointment app " +
             "JOIN FETCH app.patient " +
+            "LEFT JOIN FETCH app.treatment t " +
+            "LEFT JOIN FETCH t.product " +
             "WHERE app.agenda.id_agenda = :agendaId " +
             "AND app.date = :date")
     List<Appointment> findAppointmentsByAgendaAndDate(
