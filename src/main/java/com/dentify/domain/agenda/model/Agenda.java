@@ -10,9 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 @Table ( name  = "agendas")
@@ -45,7 +45,7 @@ public class Agenda {
 
     // 1 agenda -> n schedules
     @OneToMany ( mappedBy = "agenda", cascade = CascadeType.ALL)
-    private List<Schedule> schedules = new ArrayList<>();
+    private Set<Schedule> schedules = new HashSet<>();
 
     // 1 agenda -> n appointments
     @OneToMany ( mappedBy = "agenda")
@@ -60,5 +60,20 @@ public class Agenda {
     public void removeHorario(Schedule schedule) {
         schedules.remove(schedule);
         schedule.setAgenda(null);
+    }
+
+    public Map<DayOfWeek, List<Schedule>> fillMapDays() {
+
+        Map<DayOfWeek, List<Schedule>> mapDays = new HashMap<>();
+
+        this.schedules.forEach(schedule -> {
+                                                        schedule.getDays().forEach(day -> {
+                                                            mapDays
+                                                                    .computeIfAbsent(day, d -> new ArrayList<>())
+                                                                    .add(schedule);
+                                                        });
+        });
+
+        return mapDays;
     }
 }
