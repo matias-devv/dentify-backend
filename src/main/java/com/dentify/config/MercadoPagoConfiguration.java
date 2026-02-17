@@ -21,7 +21,7 @@ public class MercadoPagoConfiguration {
     @Value("${mercadopago.access-token}")
     private String accessToken;
 
-    @Value("${mercadopago.public-key:}")
+    @Value("${mercadopago.public-key}")
     private String publicKey;
 
     /**

@@ -1,4 +1,4 @@
-package com.dentify.calendar.dto.request;
+package com.dentify.calendar.dto.request.week;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
