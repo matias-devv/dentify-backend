@@ -1,5 +1,6 @@
 package com.dentify.domain.appointment.service;
 
+import com.dentify.calendar.dto.response.FullAppointmentResponse;
 import com.dentify.domain.agenda.model.Agenda;
 import com.dentify.domain.appointment.dto.CreateAppointmentRequestDTO;
 import com.dentify.domain.appointment.dto.CreateAppointmentResponseDTO;
@@ -18,7 +19,7 @@ import java.util.Map;
 public interface IAppointmentService {
 
     //read
-    public Appointment getAppointmentById(Long id);
+    public FullAppointmentResponse getAppointmentById(Long id);
 
     public CreateAppointmentResponseDTO saveAppointmentWithPay(CreateAppointmentRequestDTO request);
 

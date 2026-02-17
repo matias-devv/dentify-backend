@@ -1,5 +1,7 @@
 package com.dentify.domain.appointment.service;
 
+import com.dentify.calendar.dto.response.FullAppointmentResponse;
+import com.dentify.calendar.mapper.FullAppointmentMapper;
 import com.dentify.domain.agenda.model.Agenda;
 import com.dentify.domain.agenda.service.IAgendaService;
 import com.dentify.domain.appointment.dto.CreateAppointmentRequestDTO;
@@ -28,6 +30,7 @@ import com.dentify.domain.user.service.IUserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -43,7 +46,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AppointmentService implements IAppointmentService {
 
-    private final GenerateMailTokenService mailTokenService;
     private final EmailService emailService;
     private final IReceiptService receiptService;
     private final IAppointmentRepository appointmentRepository;
@@ -54,10 +56,15 @@ public class AppointmentService implements IAppointmentService {
     private final IUserService userService;
     private final IAgendaService agendaService;
     private final MercadoPagoService mercadoPagoService;
+    private final FullAppointmentMapper fullAppointmentMapper;
 
     @Override
-    public Appointment getAppointmentById(Long id) {
-        return appointmentRepository.findById(id).orElse(null);
+    public FullAppointmentResponse getAppointmentById(Long id) {
+
+        Appointment appointment = appointmentRepository.findByIdWithAllDetails(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        return fullAppointmentMapper.toResponse(appointment);
     }
 
     @Override
