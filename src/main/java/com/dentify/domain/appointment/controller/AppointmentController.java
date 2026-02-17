@@ -1,5 +1,6 @@
 package com.dentify.domain.appointment.controller;
 
+import com.dentify.calendar.dto.response.FullAppointmentResponse;
 import com.dentify.domain.appointment.dto.CreateAppointmentRequestDTO;
 import com.dentify.domain.appointment.dto.CreateAppointmentResponseDTO;
 import com.dentify.domain.appointment.model.Appointment;
@@ -34,11 +35,11 @@ public class AppointmentController {
                     @ApiResponse(responseCode = "404", description = "Appointment not found")
     })
     @GetMapping("/find/{id}")
-    public ResponseEntity<?> getAppointmentById(    @Parameter(description = "Appointment ID", example = "1")
+    public ResponseEntity<FullAppointmentResponse> getAppointmentById(@Parameter(description = "Appointment ID", example = "1")
                                                     @PathVariable Long id){
 
-        Appointment appo = appointmentService.getAppointmentById(id);
-        return ResponseEntity.status(200).body(appo);
+        FullAppointmentResponse response = appointmentService.getAppointmentById(id);
+        return ResponseEntity.status(200).body(response);
     }
 
 }
