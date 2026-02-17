@@ -14,5 +14,6 @@ public record DetailedDayResponse(Long id_agenda,
                                   int totalSlots,
                                   int freeSlots,
                                   int occupiedSlots,
-                                  List<DetailedSlotResponse> slots  ) {
+                                  List<DetailedSlotResponse> slots,
+                                  String message) {
 }
