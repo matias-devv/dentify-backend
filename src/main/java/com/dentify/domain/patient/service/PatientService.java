@@ -1,11 +1,11 @@
 package com.dentify.domain.patient.service;
 
 import com.dentify.domain.patient.dto.CreatePatientRequestDTO;
+import com.dentify.domain.patient.repository.IPatientRepository;
 import com.dentify.domain.responsibleadult.dto.ResponsibleAdultDTO;
 import com.dentify.domain.patient.model.Patient;
 import com.dentify.domain.patientstat.model.PatientStat;
 import com.dentify.domain.responsibleadult.model.ResponsibleAdult;
-import com.dentify.domain.patient.repository.IPatientRepository;
 import com.dentify.domain.patientstat.service.IPatientStatService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

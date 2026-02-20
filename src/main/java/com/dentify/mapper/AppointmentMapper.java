@@ -2,15 +2,18 @@ package com.dentify.calendar.mapper;
 
 import com.dentify.calendar.dto.PayResponse;
 import com.dentify.calendar.dto.response.*;
+import com.dentify.domain.appointment.dto.response.AppointmentCancelledResponse;
 import com.dentify.domain.appointment.model.Appointment;
+import com.dentify.domain.patient.dto.CancelledPatientResponse;
 import com.dentify.domain.speciality.model.Speciality;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class FullAppointmentMapper {
+public class AppointmentMapper {
 
     public FullAppointmentResponse toResponse(Appointment appointment) {
 
@@ -124,5 +127,23 @@ public class FullAppointmentMapper {
                         pay.getPayment_status()
                 ))
                 .toList();
+    }
+
+    public AppointmentCancelledResponse toCancelledResponse(Appointment appointment) {
+
+        var patient = appointment.getPatient();
+
+        CancelledPatientResponse patientResponse = new CancelledPatientResponse(patient.getName(),
+                                                                                patient.getSurname(),
+                                                                                patient.getDni() );
+
+        return new AppointmentCancelledResponse(appointment.getId_appointment(),
+                                                appointment.getAppointmentStatus(),
+                                                appointment.getDate(),
+                                                appointment.getStartTime(),
+                                                appointment.getStartTime().plusMinutes( appointment.getDuration_minutes() ),
+                                                appointment.getReason_for_cancellation(),
+                                                LocalDateTime.now(),
+                                                patientResponse );
     }
 }
