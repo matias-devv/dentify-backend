@@ -55,6 +55,41 @@ public class EmailService {
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     /**
+     * Notificación de turno cancelado por el odontólogo
+     */
+    public void sendAppointmentCancelledByDentist(Appointment appointment) {
+        if (!emailEnabled) return;
+
+        try {
+            String patientEmail = appointment.getPatient().getEmail();
+
+            if (patientEmail == null || patientEmail.isBlank()) {
+                log.warn("Patient without email - Appointment: {}", appointment.getId_appointment());
+                return;
+            }
+
+            Map<String, Object> data = buildBaseEmailData(appointment);
+
+            // Agregar motivo de cancelación si existe
+            data.put("cancellationReason", appointment.getReason_for_cancellation() != null
+                    ? appointment.getReason_for_cancellation()
+                    : "El odontólogo tuvo que cancelar este turno por motivos de agenda.");
+
+            sendEmail(
+                    patientEmail,
+                    "Turno cancelado - " + appointment.getApp_user().getClinic_name(),
+                    "email/appointment-cancelled-by-dentist",
+                    data
+            );
+
+            log.info("Cancellation email sent to: {}", patientEmail);
+
+        } catch (Exception e) {
+            log.error("Error sending cancellation email: {}", e.getMessage());
+        }
+    }
+
+    /**
      * Notificación de turno cancelado por falta de pago
      */
     public void sendAppointmentCancelledBySystem(Appointment appointment) {
