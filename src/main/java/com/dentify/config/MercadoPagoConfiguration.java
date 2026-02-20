@@ -32,25 +32,19 @@ public class MercadoPagoConfiguration {
     public void init() {
 
         try {
-            log.info("🚀 Iniciando configuración de MercadoPago SDK...");
 
             //validate if exists
             if (accessToken == null || accessToken.isBlank()) {
                 throw new RuntimeException("MercadoPago Access Token is required");
             }
 
-            //verify type of token
-            String tokenType = accessToken.startsWith("TEST-") ? "TEST" : "PRODUCTION";
-            log.info("🔑 Token type: {}", tokenType);
-            log.info("🔑 Token preview: {}***", accessToken.substring(0, Math.min(15, accessToken.length())));
-
             // Set the access token globally for all MercadoPago API calls
             MercadoPagoConfig.setAccessToken(accessToken);
 
-            log.info("✅ MercadoPago SDK configured successfully");
+            log.info(" MercadoPago SDK configured successfully");
 
         } catch (Exception e) {
-            log.error("💥 Error configurando MercadoPago SDK", e);
+            log.error("Failed to configure MercadoPago SDK", e);
             throw new RuntimeException("Failed to configure MercadoPago SDK", e);
         }
     }
