@@ -1,10 +1,14 @@
 package com.dentify.domain.product.service;
 
+import com.dentify.calendar.dto.response.ProductResponse;
+import com.dentify.domain.product.dto.ActiveProductResponse;
 import com.dentify.domain.product.dto.ProductDTO;
 import com.dentify.domain.product.model.Product;
 import com.dentify.domain.speciality.model.Speciality;
 import com.dentify.domain.product.repository.IProductRepository;
 import com.dentify.domain.speciality.service.ISpecialityService;
+import com.dentify.mapper.ProductMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService implements IProductService {
 
-    @Autowired
-    private IProductRepository productRepository;
+    private final IProductRepository productRepository;
+    private final ISpecialityService specialityService;
+    private final ProductMapper productMapper;
 
-    @Autowired
-    private ISpecialityService specialityService;
 
     @Override
     public String saveProduct(ProductDTO dto) {
@@ -87,5 +91,13 @@ public class ProductService implements IProductService {
         if (!product.getActive()) {
             throw new RuntimeException("product is not active");
         }
+    }
+
+    @Override
+    public List<ActiveProductResponse> getActiveProducts() {
+
+        List<Product> products = productRepository.findAllActiveWithSpeciality();
+
+        return productMapper.buildActiveProductResponseList(products);
     }
 }

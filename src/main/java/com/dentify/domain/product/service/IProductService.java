@@ -1,5 +1,7 @@
 package com.dentify.domain.product.service;
 
+import com.dentify.calendar.dto.response.ProductResponse;
+import com.dentify.domain.product.dto.ActiveProductResponse;
 import com.dentify.domain.product.dto.ProductDTO;
 import com.dentify.domain.product.model.Product;
 
@@ -16,4 +18,6 @@ public interface IProductService {
     public String saveAll(List<ProductDTO> products);
 
     void validateIfProductIsActive(Product product);
+
+    List<ActiveProductResponse> getActiveProducts();
 }
