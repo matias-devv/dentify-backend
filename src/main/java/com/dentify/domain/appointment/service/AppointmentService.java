@@ -1,13 +1,15 @@
 package com.dentify.domain.appointment.service;
 
 import com.dentify.calendar.dto.response.FullAppointmentResponse;
-import com.dentify.calendar.mapper.FullAppointmentMapper;
+import com.dentify.mapper.AppointmentMapper;
 import com.dentify.domain.agenda.model.Agenda;
 import com.dentify.domain.agenda.service.IAgendaService;
-import com.dentify.domain.appointment.dto.CreateAppointmentRequestDTO;
+import com.dentify.domain.appointment.dto.request.CancelAppointmentRequest;
+import com.dentify.domain.appointment.dto.request.CreateAppointmentRequestDTO;
+import com.dentify.domain.appointment.dto.response.AppointmentCancelledResponse;
 import com.dentify.domain.appointment.model.Appointment;
 import com.dentify.domain.appointment.repository.IAppointmentRepository;
-import com.dentify.domain.appointment.dto.CreateAppointmentResponseDTO;
+import com.dentify.domain.appointment.dto.response.CreateAppointmentResponseDTO;
 import com.dentify.domain.appointment.enums.AppointmentStatus;
 import com.dentify.domain.patient.service.IPatientService;
 import com.dentify.domain.pay.enums.PaymentMethod;
@@ -19,9 +21,7 @@ import com.dentify.domain.product.model.Product;
 import com.dentify.domain.product.service.IProductService;
 import com.dentify.domain.receipt.model.Receipt;
 import com.dentify.domain.receipt.service.IReceiptService;
-import com.dentify.domain.schedule.model.Schedule;
 import com.dentify.integration.email.EmailService;
-import com.dentify.integration.email.GenerateMailTokenService;
 import com.dentify.integration.mercadopago.MercadoPagoService;
 import com.dentify.domain.treatment.model.Treatment;
 import com.dentify.domain.treatment.service.ITreatmentService;
@@ -30,7 +30,6 @@ import com.dentify.domain.user.service.IUserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -56,7 +55,7 @@ public class AppointmentService implements IAppointmentService {
     private final IUserService userService;
     private final IAgendaService agendaService;
     private final MercadoPagoService mercadoPagoService;
-    private final FullAppointmentMapper fullAppointmentMapper;
+    private final AppointmentMapper appointmentMapper;
 
     @Override
     public FullAppointmentResponse getAppointmentById(Long id) {
@@ -64,7 +63,7 @@ public class AppointmentService implements IAppointmentService {
         Appointment appointment = appointmentRepository.findByIdWithAllDetails(id)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        return fullAppointmentMapper.toResponse(appointment);
+        return appointmentMapper.toResponse(appointment);
     }
 
     @Override
@@ -254,6 +253,37 @@ public class AppointmentService implements IAppointmentService {
     @Override
     public List<Appointment> findAppointmentsByAgendaAndDate(Long agendaId, LocalDate date) {
         return appointmentRepository.findAppointmentsByAgendaAndDate(agendaId, date);
+    }
+
+    @Override
+    public AppointmentCancelledResponse cancelAppointment(CancelAppointmentRequest request) {
+
+        Appointment appointment = appointmentRepository.findByIdWithPatient( request.id_appointment() )
+                                                        .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        if ( appointment.getAppointmentStatus().equals(AppointmentStatus.SCHEDULED) || appointment.getAppointmentStatus().equals(AppointmentStatus.CONFIRMED) ) {
+
+            appointment.setReason_for_cancellation(request.reason_for_cancellation());
+            appointment.setCancelled_at(LocalDateTime.now());
+
+            String cancelledBy = request.cancelledBy();
+
+            if (cancelledBy.equalsIgnoreCase("ADMIN")) {
+
+                appointment.setAppointmentStatus(AppointmentStatus.CANCELLED_BY_ADMIN);
+
+                emailService.sendAppointmentCancelledByDentist(appointment);
+            }
+            if (cancelledBy.equalsIgnoreCase("PATIENT")) {
+
+                appointment.setAppointmentStatus(AppointmentStatus.CANCELLED_BY_PATIENT);
+            }
+
+            appointmentRepository.save(appointment);
+
+            return appointmentMapper.toCancelledResponse(appointment);
+        }
+        throw new RuntimeException("The appointment was previously cancelled");
     }
 
     private CreateAppointmentResponseDTO buildResponse(Patient patient, Product product, Pay pay, Treatment treatment,

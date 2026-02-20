@@ -1,14 +1,13 @@
 package com.dentify.domain.appointment.service;
 
 import com.dentify.calendar.dto.response.FullAppointmentResponse;
-import com.dentify.domain.agenda.model.Agenda;
-import com.dentify.domain.appointment.dto.CreateAppointmentRequestDTO;
-import com.dentify.domain.appointment.dto.CreateAppointmentResponseDTO;
+import com.dentify.domain.appointment.dto.request.CancelAppointmentRequest;
+import com.dentify.domain.appointment.dto.request.CreateAppointmentRequestDTO;
+import com.dentify.domain.appointment.dto.response.AppointmentCancelledResponse;
+import com.dentify.domain.appointment.dto.response.CreateAppointmentResponseDTO;
 import com.dentify.domain.appointment.enums.AppointmentStatus;
 import com.dentify.domain.appointment.model.Appointment;
-import com.dentify.domain.schedule.model.Schedule;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,4 +49,6 @@ public interface IAppointmentService {
     List<Appointment> findAppointmentsByAgendaAndDateRange(Long idAgenda, @NotBlank LocalDate startDate, @NotBlank LocalDate endDate);
 
     List<Appointment> findAppointmentsByAgendaAndDate(  Long agendaId, LocalDate date);
+
+    public AppointmentCancelledResponse cancelAppointment(CancelAppointmentRequest request);
 }
