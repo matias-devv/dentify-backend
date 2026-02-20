@@ -1,12 +1,11 @@
 package com.dentify.domain.product.controller;
 
+import com.dentify.calendar.dto.response.ProductResponse;
+import com.dentify.domain.product.dto.ActiveProductResponse;
 import com.dentify.domain.product.dto.ProductDTO;
 import com.dentify.domain.product.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +24,10 @@ public class ProductController {
     @PostMapping("/save/all")
     public String saveAll(@RequestBody List<ProductDTO> products) {
         return productService.saveAll(products);
+    }
+
+    @GetMapping("/active")
+    public List<ActiveProductResponse> getActiveProducts(){
+        return productService.getActiveProducts();
     }
 }
