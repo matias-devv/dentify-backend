@@ -1,9 +1,10 @@
 package com.dentify.domain.appointment.controller;
 
 import com.dentify.calendar.dto.response.FullAppointmentResponse;
-import com.dentify.domain.appointment.dto.CreateAppointmentRequestDTO;
-import com.dentify.domain.appointment.dto.CreateAppointmentResponseDTO;
-import com.dentify.domain.appointment.model.Appointment;
+import com.dentify.domain.appointment.dto.request.CancelAppointmentRequest;
+import com.dentify.domain.appointment.dto.request.CreateAppointmentRequestDTO;
+import com.dentify.domain.appointment.dto.response.AppointmentCancelledResponse;
+import com.dentify.domain.appointment.dto.response.CreateAppointmentResponseDTO;
 import com.dentify.domain.appointment.service.IAppointmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,4 +43,10 @@ public class AppointmentController {
         return ResponseEntity.status(200).body(response);
     }
 
+    @PatchMapping("/cancel")
+    public ResponseEntity<AppointmentCancelledResponse> cancelAppointment(@RequestBody CancelAppointmentRequest request){
+
+        AppointmentCancelledResponse response = appointmentService.cancelAppointment(request);
+        return ResponseEntity.status(200).body(response);
+    }
 }
