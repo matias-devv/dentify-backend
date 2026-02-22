@@ -1,4 +1,4 @@
-package com.dentify.domain.appointment.dto;
+package com.dentify.domain.appointment.dto.request;
 
 import com.dentify.domain.pay.enums.PaymentMethod;
 import jakarta.validation.constraints.Future;
