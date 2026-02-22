@@ -1,4 +1,4 @@
-package com.dentify.domain.appointment.dto;
+package com.dentify.domain.appointment.dto.response;
 
 import com.dentify.domain.appointment.enums.AppointmentStatus;
 import com.dentify.domain.pay.enums.PaymentMethod;
