@@ -1,4 +1,8 @@
 package com.dentify.dashboard.service;
 
-public class IDashboardService {
+import com.dentify.dashboard.dto.DashboardSummary;
+
+public interface IDashboardService {
+
+    public DashboardSummary getDashboardSummary();
 }
