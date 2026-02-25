@@ -3,12 +3,12 @@ package com.dentify.domain.agenda.service;
 import com.dentify.domain.agenda.dto.AgendaRequestDTO;
 import com.dentify.domain.agenda.model.Agenda;
 import com.dentify.domain.agenda.repository.IAgendaRepository;
+import com.dentify.domain.dentist.Dentist;
+import com.dentify.domain.dentist.service.IDentistService;
 import com.dentify.domain.product.model.Product;
 import com.dentify.domain.product.service.IProductService;
 import com.dentify.domain.schedule.model.Schedule;
-import com.dentify.domain.user.model.AppUser;
-import com.dentify.domain.user.service.IUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -18,25 +18,21 @@ import java.util.HashSet;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AgendaService implements IAgendaService {
 
-    @Autowired
-    private IAgendaRepository agendaRepository;
-
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private IProductService productService;
+    private final IAgendaRepository agendaRepository;
+    private final IDentistService dentistService;
+    private final IProductService productService;
 
     @Override
     public String save(AgendaRequestDTO request) {
 
-        //get user
-        AppUser user = userService.findUserById(request.idUserApp());
+        //get dentist
+        Dentist dentist = dentistService.findDentistById( request.idDentist() );
 
-        if ( user == null){
-            throw new RuntimeException("The user was not found");
+        if ( dentist == null){
+            throw new RuntimeException("The dentist was not found");
         }
 
         this.validateDates(request);
@@ -54,7 +50,7 @@ public class AgendaService implements IAgendaService {
                 agenda.setProduct(product);
             }
         }
-        agenda.setApp_user(user);
+        agenda.setDentist(dentist);
 
         //add schedules
         request.schedules().forEach(schedule -> {
@@ -66,7 +62,7 @@ public class AgendaService implements IAgendaService {
             agenda.addSchedule(newSchedule);
         });
 
-        Agenda savedAgenda = agendaRepository.save(agenda);
+        agendaRepository.save(agenda);
 
         return "The agenda was saved successfully";
     }
@@ -87,21 +83,20 @@ public class AgendaService implements IAgendaService {
     @Override
     public void validateAgendaAvailability(Agenda agenda, LocalDate date, LocalTime start_time) {
 
-        if ( agenda.getStart_date().isAfter(date) && agenda.getFinal_date().isBefore(date)){
-            throw new RuntimeException("The date is not available in the calendar availability");
-        }
-
+        if (date.isBefore(agenda.getStart_date()) || date.isAfter(agenda.getFinal_date() ) )
+            throw new RuntimeException("Date outside agenda range");
     }
 
     @Override
-    public void verifyIfThisAgendaBelongsToTheDentist(Agenda agenda, AppUser dentist) {
-        if ( agenda.getApp_user().getId_app_user() != ( dentist.getId_app_user())){
+    public void verifyIfThisAgendaBelongsToTheDentist(Agenda agenda, Dentist dentist) {
+
+        if ( !agenda.getDentist().getId().equals( dentist.getId() ) ){
             throw new RuntimeException("The dentist must own this appointment book");
         }
     }
 
     @Override
-    public void validateCreateAppointment(Agenda agenda, AppUser dentist, Product product, LocalDate date, LocalTime starTime) {
+    public void validateCreateAppointment(Agenda agenda, Dentist dentist, Product product, LocalDate date, LocalTime starTime) {
 
         this.validateIfAgendaIsActive( agenda);
 

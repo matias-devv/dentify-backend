@@ -1,10 +1,9 @@
 package com.dentify.domain.agenda.service;
 
-import com.dentify.calendar.dto.request.day.DetailedDayRequest;
-import com.dentify.calendar.dto.request.week.WeekRequest;
 import com.dentify.domain.agenda.dto.AgendaRequestDTO;
 import com.dentify.domain.agenda.model.Agenda;
-import com.dentify.domain.user.model.AppUser;
+import com.dentify.domain.dentist.Dentist;
+import com.dentify.domain.userProfile.model.UserProfile;
 import com.dentify.domain.product.model.Product;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
@@ -17,17 +16,15 @@ public interface IAgendaService {
 
     public String save(AgendaRequestDTO agendaRequestDTO);
 
-//    public List<AgendaResponseDTO> findAgendasByUser(Long idUserApp);
-
     public Agenda findAgendaById(Long idAgenda);
 
     void validateIfAgendaIsActive(Agenda agenda);
 
     void validateAgendaAvailability(Agenda agenda, @Future(message = "The date must be in the future.") LocalDate date, LocalTime start_time);
 
-    void verifyIfThisAgendaBelongsToTheDentist(Agenda agenda, AppUser dentist);
+    void verifyIfThisAgendaBelongsToTheDentist(Agenda agenda, Dentist dentist);
 
-    void validateCreateAppointment(Agenda agenda, AppUser dentist, Product product, @NotBlank(message = "The date is mandatory") @Future(message = "The date must be in the future.") LocalDate date, @NotBlank(message = "The start time is mandatory") LocalTime starTime);
+    void validateCreateAppointment(Agenda agenda, Dentist dentist, Product product, @NotBlank(message = "The date is mandatory") @Future(message = "The date must be in the future.") LocalDate date, @NotBlank(message = "The start time is mandatory") LocalTime starTime);
 
     void validateDateRangeInAgenda(Agenda agenda, LocalDate startDate, LocalDate endDate);
 
