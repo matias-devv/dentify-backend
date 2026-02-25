@@ -1,5 +1,6 @@
 package com.dentify.domain.appointment.enums;
 
+
 public enum AppointmentStatus {
 
     SCHEDULED,      // appointment created, patient has not yet arrived
@@ -20,11 +21,21 @@ public enum AppointmentStatus {
 
     CANCELLED_BY_PATIENT,   // Patient reported absence
 
-    CANCELLED_BY_ADMIN,      // Cancelled by admin/ secretary
+    CANCELLED_BY_DENTIST,
+
+    CANCELLED_BY_SECRETARY,
 
     COMPLETED,      // medical care completed
                     // appointment closed, not editable
 
-    NO_SHOW        // patient did not show up (defined with a grace period)
+    NO_SHOW;        // patient did not show up (defined with a grace period)
                     // impacts patient metrics
+
+    public static AppointmentStatus fromString(String type) {
+        try {
+            return AppointmentStatus.valueOf(type.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid appointment status: " + type);
+        }
+    }
 }
