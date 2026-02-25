@@ -24,8 +24,8 @@ public class DashboardService implements IDashboardService {
 
     public DashboardSummary getDashboardSummary() {
 
-        List<AppointmentStatus> statuses = List.of( AppointmentStatus.CANCELLED_BY_SYSTEM, AppointmentStatus.CANCELLED_BY_ADMIN,
-                                                     AppointmentStatus.CANCELLED_BY_PATIENT);
+        List<AppointmentStatus> statuses = List.of( AppointmentStatus.CANCELLED_BY_SYSTEM, AppointmentStatus.CANCELLED_BY_DENTIST,
+                                                    AppointmentStatus.CANCELLED_BY_SECRETARY , AppointmentStatus.CANCELLED_BY_PATIENT);
 
         BigDecimal dailyIncome = payService.getDailyIncome();
         BigDecimal monthlyIncome = payService.getMonthlyIncome();
