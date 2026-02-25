@@ -2,14 +2,17 @@ package com.dentify.domain.appointment.model;
 
 import com.dentify.domain.agenda.model.Agenda;
 import com.dentify.domain.appointment.enums.AppointmentStatus;
+import com.dentify.domain.dentist.Dentist;
 import com.dentify.domain.notification.model.Notification;
 import com.dentify.domain.pay.enums.PaymentMethod;
 import com.dentify.domain.patient.model.Patient;
 import com.dentify.domain.pay.model.Pay;
 import com.dentify.domain.treatment.model.Treatment;
-import com.dentify.domain.user.model.AppUser;
+import com.dentify.domain.userProfile.model.UserProfile;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,15 +51,16 @@ public class Appointment {
     private Boolean attendanceConfirmed = false;
 
     private LocalDateTime confirmed_at;
+    private LocalDateTime cancelled_at;
 
-    //n appointment -> 1 user
-    @ManyToOne
-    @JoinColumn( name = "id_app_user", nullable = false)
-    private AppUser app_user;
+    // N:1 — The appointment belongs to a specific dentist
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "dentist_id", nullable = false)
+    private Dentist dentist;
 
-    //n appointment -> 1 patient
-    @ManyToOne
-    @JoinColumn( name = "id_patient", nullable = false)
+    // N:1 — siempre tiene un paciente
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
     //one appointment -> n pays
@@ -67,15 +71,23 @@ public class Appointment {
     @OneToMany ( mappedBy = "appointment")
     private List<Notification> notifications;
 
-    //n appointments -> one treatment
-    @ManyToOne
-    @JoinColumn( name = "id_treatment", nullable = true)
+    // N:1 — el turno pertenece a una agenda
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "agenda_id", nullable = false)
+    private Agenda agenda;
+
+    // NULLABLE — un turno puede existir sin tratamiento (consulta suelta)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "treatment_id")
     private Treatment treatment;
 
-    //many appointments -> one agenda
-    @ManyToOne
-    @JoinColumn( name = "id_agenda", nullable = false)
-    private Agenda agenda;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public PaymentMethod getPrimaryPaymentMethod() {
         return this.pays.stream()
@@ -90,4 +102,11 @@ public class Appointment {
                 .orElseThrow( () -> new IllegalStateException("Appointment without payments. appointmentId=" + this.id_appointment) );
     }
 
+    public boolean isCancelled() {
+        if ( this.getAppointmentStatus().equals( AppointmentStatus.CANCELLED_BY_SYSTEM)) return true;
+        if ( this.getAppointmentStatus().equals( AppointmentStatus.CANCELLED_BY_DENTIST)) return true;
+        if ( this.getAppointmentStatus().equals( AppointmentStatus.CANCELLED_BY_SECRETARY)) return true;
+        if ( this.getAppointmentStatus().equals( AppointmentStatus.CANCELLED_BY_PATIENT)) return true;
+        return false;
+    }
 }
