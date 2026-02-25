@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Cancelación de Turno</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        /* Resets — solo para clientes que soporten <style> en <head> */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+        body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+
+        /* Responsive — mobile breakpoint */
+        @media only screen and (max-width: 620px) {
+            .wrapper    { width: 100% !important; padding: 0 !important; }
+            .container  { width: 100% !important; border-radius: 0 !important; }
+            .mobile-pad { padding-left: 20px !important; padding-right: 20px !important; }
+            .mobile-full  { width: 100% !important; display: block !important; }
+            .mobile-center { text-align: center !important; }
+            .detail-label, .detail-value { display: block !important; width: 100% !important; }
+            .detail-value { padding-left: 0 !important; padding-top: 2px !important; }
+            .btn-cell { display: block !important; width: 100% !important; padding: 6px 0 !important; text-align: center !important; }
+        }
+
+        /* Modo oscuro — clientes compatibles (Apple Mail, Outlook iOS) */
+        @media (prefers-color-scheme: dark) {
+            .dark-bg        { background-color: #0f172a !important; }
+            .dark-card      { background-color: #1e293b !important; }
+            .dark-text      { color: #e2e8f0 !important; }
+            .dark-muted     { color: #94a3b8 !important; }
+            .dark-border    { border-color: #334155 !important; }
+            .dark-detail-bg { background-color: #1e293b !important; }
+        }
+    </style>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f1f5f9; font-family:Georgia,'Times New Roman',Times,serif;" class="dark-bg">
+
+<!-- ═══════════════════════════════════════════
+     WRAPPER EXTERIOR
+════════════════════════════════════════════ -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="background-color:#f1f5f9;" class="dark-bg wrapper">
+    <tr>
+        <td align="center" style="padding:32px 16px;">
+
+            <!-- CONTENEDOR PRINCIPAL 600px -->
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+                   style="width:600px; max-width:600px; background-color:#ffffff; border-radius:4px;
+                          overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.08);"
+                   class="container dark-card">
+
+                <!-- Línea de acento superior -->
+                <tr>
+                    <td height="4" style="background-color:#1d4ed8; font-size:0; line-height:0;">&nbsp;</td>
+                </tr>
+
+                <!-- ═══════════════════════════════════════
+                     HEADER
+                ════════════════════════════════════════ -->
+                <tr>
+                    <td align="center" style="padding:44px 40px 36px; background-color:#ffffff;"
+                        class="mobile-pad dark-card">
+
+                        <!-- Logo (condicional) -->
+                        <div th:if="${clinicLogoUrl}">
+                            <img th:src="${clinicLogoUrl}" alt="Logo de la clínica" width="140"
+                                 style="display:block; margin:0 auto 28px; max-width:140px; height:auto;">
+                        </div>
+
+                        <!-- Ícono alerta SVG inline — compatible Gmail -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                               style="margin:0 auto 20px;">
+                            <tr>
+                                <td width="52" height="52" align="center" valign="middle"
+                                    style="background-color:#fef2f2; border-radius:50%; width:52px; height:52px;">
+                                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg" style="display:block; margin:0 auto;">
+                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
+                                              stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M13.73 21a2 2 0 0 1-3.46 0"
+                                              stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <line x1="1" y1="1" x2="23" y2="23"
+                                              stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/>
+                                    </svg>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Badge de estado -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                               style="margin:0 auto 16px;">
+                            <tr>
+                                <td style="background-color:#fef2f2; border-radius:20px; padding:5px 16px;">
+                                    <span style="font-family:Arial,Helvetica,sans-serif; font-size:11px;
+                                                 font-weight:700; color:#dc2626; letter-spacing:1.5px;
+                                                 text-transform:uppercase;">Turno Cancelado</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Título -->
+                        <h1 style="margin:0 0 12px; font-family:Georgia,'Times New Roman',Times,serif;
+                                   font-size:26px; font-weight:400; color:#0f172a;
+                                   letter-spacing:-0.3px; line-height:1.3;" class="dark-text">
+                            Tu turno ha sido cancelado
+                        </h1>
+
+                        <!--
+                            FIX B-1: color corregido #FFFFFF → #64748b
+                            El texto del saludo se rendería invisible sobre fondo blanco en light mode.
+                        -->
+                        <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:15px;
+                                  color:#64748b; line-height:1.6;" class="dark-muted">
+                            Hola <strong th:text="${paciente}"
+                                         style="color:#1d4ed8; font-weight:600;">Paciente</strong>,
+                            lamentamos los inconvenientes que esto pueda ocasionarte.
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Divisor decorativo -->
+                <tr>
+                    <td style="padding:0 40px;" class="mobile-pad">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td height="1" style="background-color:#e2e8f0; font-size:0; line-height:0;"
+                                    class="dark-border">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- ═══════════════════════════════════════
+                     DETALLES DEL TURNO
+                ════════════════════════════════════════ -->
+                <tr>
+                    <td style="padding:36px 40px 0;" class="mobile-pad">
+
+                        <p style="margin:0 0 16px; font-family:Arial,Helvetica,sans-serif; font-size:11px;
+                                  font-weight:700; color:#94a3b8; letter-spacing:1.5px; text-transform:uppercase;">
+                            Detalles del turno
+                        </p>
+
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                               style="background-color:#f8fafc; border-radius:4px; border:1px solid #e2e8f0;"
+                               class="dark-detail-bg dark-border">
+
+                            <!-- ── Fila: Fecha ─────────────────────────── -->
+                            <tr>
+                                <td style="padding:16px 20px; border-bottom:1px solid #e2e8f0;" class="dark-border">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td class="detail-label" valign="middle" style="width:50%;">
+                                                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                                    <tr>
+                                                        <td valign="middle" width="28">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"
+                                                                      stroke="#64748b" stroke-width="1.8" fill="none"/>
+                                                                <line x1="16" y1="2" x2="16" y2="6" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/>
+                                                                <line x1="8"  y1="2" x2="8"  y2="6" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/>
+                                                                <line x1="3"  y1="10" x2="21" y2="10" stroke="#64748b" stroke-width="1.8"/>
+                                                            </svg>
+                                                        </td>
+                                                        <!--
+                                                            FIX B-2: color:#FFFFFF → #64748b
+                                                            El label "Fecha" era invisible en light mode.
+                                                        -->
+                                                        <td valign="middle"
+                                                            style="padding-left:8px; font-family:Arial,Helvetica,sans-serif;
+                                                                   font-size:13px; color:#64748b; font-weight:500;"
+                                                            class="dark-muted">Fecha</td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <!--
+                                                FIX A-1: class duplicado fusionado → class="detail-value dark-text"
+                                                FIX B-3: color:#FFFFFF → #0f172a
+                                            -->
+                                            <td class="detail-value dark-text" align="right" valign="middle"
+                                                style="font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                                       font-weight:600; color:#0f172a;">
+                                                <span th:text="${fecha}">15 de marzo, 2025</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <!-- ── Fila: Hora ──────────────────────────── -->
+                            <tr>
+                                <td style="padding:16px 20px; border-bottom:1px solid #e2e8f0;" class="dark-border">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td class="detail-label" valign="middle" style="width:50%;">
+                                                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                                    <tr>
+                                                        <td valign="middle" width="28">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                                                                <circle cx="12" cy="12" r="10"
+                                                                        stroke="#64748b" stroke-width="1.8" fill="none"/>
+                                                                <polyline points="12 6 12 12 16 14"
+                                                                          stroke="#64748b" stroke-width="1.8"
+                                                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                                            </svg>
+                                                        </td>
+                                                        <!-- FIX B-4: color:#FFFFFF → #64748b -->
+                                                        <td valign="middle"
+                                                            style="padding-left:8px; font-family:Arial,Helvetica,sans-serif;
+                                                                   font-size:13px; color:#64748b; font-weight:500;"
+                                                            class="dark-muted">Hora</td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <!-- FIX A-2 + B-5 -->
+                                            <td class="detail-value dark-text" align="right" valign="middle"
+                                                style="font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                                       font-weight:600; color:#0f172a;">
+                                                <span th:text="${hora}">14:30 hs</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <!-- ── Fila: Profesional ───────────────────── -->
+                            <tr>
+                                <td style="padding:16px 20px; border-bottom:1px solid #e2e8f0;" class="dark-border">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td class="detail-label" valign="middle" style="width:50%;">
+                                                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                                    <tr>
+                                                        <td valign="middle" width="28">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                                                                      stroke="#64748b" stroke-width="1.8"
+                                                                      stroke-linecap="round" stroke-linejoin="round"/>
+                                                                <circle cx="12" cy="7" r="4"
+                                                                        stroke="#64748b" stroke-width="1.8" fill="none"/>
+                                                            </svg>
+                                                        </td>
+                                                        <td valign="middle"
+                                                            style="padding-left:8px; font-family:Arial,Helvetica,sans-serif;
+                                                                   font-size:13px; color:#64748b; font-weight:500;"
+                                                            class="dark-muted">Profesional</td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <!-- FIX A-3 + B-6 -->
+                                            <td class="detail-value dark-text" align="right" valign="middle"
+                                                style="font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                                       font-weight:600; color:#0f172a;">
+                                                <span th:text="${dentistName}">Dr. Juan Pérez</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <!-- ── Fila: Tratamiento ───────────────────── -->
+                            <tr>
+                                <td style="padding:16px 20px;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td class="detail-label" valign="middle" style="width:50%;">
+                                                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                                    <tr>
+                                                        <td valign="middle" width="28">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                                                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"
+                                                                          stroke="#64748b" stroke-width="1.8"
+                                                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                                            </svg>
+                                                        </td>
+                                                        <td valign="middle"
+                                                            style="padding-left:8px; font-family:Arial,Helvetica,sans-serif;
+                                                                   font-size:13px; color:#64748b; font-weight:500;"
+                                                            class="dark-muted">Tratamiento</td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <!-- FIX A-4 + B-7 -->
+                                            <td class="detail-value dark-text" align="right" valign="middle"
+                                                style="font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                                       font-weight:600; color:#0f172a;">
+                                                <span th:text="${treatmentName}">Consulta General</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- ═══════════════════════════════════════
+                     MOTIVO DE CANCELACIÓN (condicional)
+                ════════════════════════════════════════ -->
+                <tr th:if="${cancellationReason}">
+                    <td style="padding:24px 40px 0;" class="mobile-pad">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                               style="background-color:#fffbeb; border-radius:4px; border-left:3px solid #f59e0b;">
+                            <tr>
+                                <td style="padding:18px 20px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                                           style="margin-bottom:8px;">
+                                        <tr>
+                                            <td valign="middle" width="22">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                                                    <circle cx="12" cy="12" r="10"
+                                                            stroke="#d97706" stroke-width="1.8" fill="none"/>
+                                                    <line x1="12" y1="8"  x2="12"    y2="12"
+                                                          stroke="#d97706" stroke-width="1.8" stroke-linecap="round"/>
+                                                    <line x1="12" y1="16" x2="12.01" y2="16"
+                                                          stroke="#d97706" stroke-width="2.2" stroke-linecap="round"/>
+                                                </svg>
+                                            </td>
+                                            <td valign="middle"
+                                                style="padding-left:8px; font-family:Arial,Helvetica,sans-serif;
+                                                       font-size:12px; font-weight:700; color:#92400e;
+                                                       letter-spacing:1px; text-transform:uppercase;">
+                                                Motivo de la cancelación
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <p th:text="${cancellationReason}"
+                                       style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                              color:#78350f; line-height:1.7;">
+                                        El odontólogo tuvo que cancelar por motivos de agenda.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- ═══════════════════════════════════════
+                     MENSAJE DE CONFIANZA
+                ════════════════════════════════════════ -->
+                <tr>
+                    <td style="padding:24px 40px 0;" class="mobile-pad">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                               style="background-color:#0f172a; border-radius:4px;">
+                            <tr>
+                                <td style="padding:28px;">
+                                    <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:11px;
+                                              font-weight:700; color:#3b82f6; letter-spacing:1.5px; text-transform:uppercase;">
+                                        Nuestro compromiso
+                                    </p>
+                                    <h2 style="margin:0 0 12px; font-family:Georgia,'Times New Roman',Times,serif;
+                                               font-size:20px; font-weight:400; color:#f8fafc; line-height:1.4;">
+                                        Tu salud bucal sigue siendo nuestra prioridad
+                                    </h2>
+                                    <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                              color:#94a3b8; line-height:1.8;">
+                                        Valoramos profundamente tu confianza en nuestro equipo. Esta cancelación es
+                                        circunstancial y estamos comprometidos a brindarte la mejor atención cuando
+                                        reagendes tu consulta.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- ═══════════════════════════════════════
+                     BENEFICIOS
+                ════════════════════════════════════════ -->
+                <tr>
+                    <td style="padding:24px 40px 0;" class="mobile-pad">
+
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td style="padding-bottom:14px;">
+                                    <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:11px;
+                                              font-weight:700; color:#94a3b8; letter-spacing:1.5px; text-transform:uppercase;">
+                                        Por qué seguir confiando en nosotros
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Ítem 1 -->
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td valign="top" width="28" style="padding-top:2px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td width="20" height="20" align="center" valign="middle"
+                                                style="background-color:#eff6ff; border-radius:50%; width:20px; height:20px;">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg" style="display:block; margin:0 auto;">
+                                                    <polyline points="20 6 9 17 4 12" stroke="#1d4ed8" stroke-width="2.5"
+                                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding:2px 0 12px 10px; font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                           color:#475569; line-height:1.6; border-bottom:1px solid #f1f5f9;"
+                                    class="dark-muted dark-border">
+                                    Atención personalizada y profesional de primer nivel
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Ítem 2 -->
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td valign="top" width="28" style="padding-top:14px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td width="20" height="20" align="center" valign="middle"
+                                                style="background-color:#eff6ff; border-radius:50%; width:20px; height:20px;">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg" style="display:block; margin:0 auto;">
+                                                    <polyline points="20 6 9 17 4 12" stroke="#1d4ed8" stroke-width="2.5"
+                                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding:14px 0 12px 10px; font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                           color:#475569; line-height:1.6; border-bottom:1px solid #f1f5f9;"
+                                    class="dark-muted dark-border">
+                                    Equipamiento moderno y tecnología de última generación
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Ítem 3 -->
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td valign="top" width="28" style="padding-top:14px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td width="20" height="20" align="center" valign="middle"
+                                                style="background-color:#eff6ff; border-radius:50%; width:20px; height:20px;">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg" style="display:block; margin:0 auto;">
+                                                    <polyline points="20 6 9 17 4 12" stroke="#1d4ed8" stroke-width="2.5"
+                                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding:14px 0 12px 10px; font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                           color:#475569; line-height:1.6; border-bottom:1px solid #f1f5f9;"
+                                    class="dark-muted dark-border">
+                                    Flexibilidad horaria para adaptarnos a tu agenda
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Ítem 4 -->
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td valign="top" width="28" style="padding-top:14px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td width="20" height="20" align="center" valign="middle"
+                                                style="background-color:#eff6ff; border-radius:50%; width:20px; height:20px;">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg" style="display:block; margin:0 auto;">
+                                                    <polyline points="20 6 9 17 4 12" stroke="#1d4ed8" stroke-width="2.5"
+                                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding:14px 0 0 10px; font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                           color:#475569; line-height:1.6;"
+                                    class="dark-muted">
+                                    Comunicación transparente y compromiso total con tu bienestar
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+
+                <!-- ═══════════════════════════════════════
+                     CTA — REAGENDAR
+                ════════════════════════════════════════ -->
+                <tr>
+                    <td style="padding:32px 40px;" class="mobile-pad">
+
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                               style="border-top:1px solid #e2e8f0;" class="dark-border">
+                            <tr>
+                                <td align="center" style="padding-top:28px; padding-bottom:20px;">
+                                    <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:11px;
+                                              font-weight:700; color:#94a3b8; letter-spacing:1.5px; text-transform:uppercase;">
+                                        Próximo paso
+                                    </p>
+                                    <p style="margin:0 0 24px; font-family:Georgia,'Times New Roman',Times,serif;
+                                              font-size:18px; color:#0f172a; line-height:1.5;" class="dark-text">
+                                        Reagendá tu turno cuando quieras
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Botones CTA -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                               align="center" style="margin:0 auto;">
+                            <tr>
+                                <!-- Botón WhatsApp -->
+                                <td class="btn-cell" style="padding-right:8px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td align="center" style="background-color:#16a34a; border-radius:4px;">
+                                                <a th:href="'https://wa.me/' + ${clinicaWhatsApp}" target="_blank"
+                                                   style="display:inline-block; padding:14px 28px;
+                                                          font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                                          font-weight:700; color:#ffffff; text-decoration:none;
+                                                          letter-spacing:0.3px; white-space:nowrap;">
+                                                    <span style="vertical-align:middle; margin-right:8px;">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#ffffff"
+                                                             xmlns="http://www.w3.org/2000/svg"
+                                                             style="display:inline-block; vertical-align:middle; margin-top:-2px;">
+                                                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
+                                                        </svg>
+                                                    </span>
+                                                    WhatsApp
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+
+                                <!-- Botón Llamar -->
+                                <td class="btn-cell" style="padding-left:8px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td align="center"
+                                                style="background-color:#ffffff; border-radius:4px; border:1.5px solid #1d4ed8;">
+                                                <a th:href="'tel:' + ${clinicaWhatsApp}" target="_blank"
+                                                   style="display:inline-block; padding:13px 28px;
+                                                          font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                                          font-weight:700; color:#1d4ed8; text-decoration:none;
+                                                          letter-spacing:0.3px; white-space:nowrap;">
+                                                    <span style="vertical-align:middle; margin-right:8px;">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                                             xmlns="http://www.w3.org/2000/svg"
+                                                             style="display:inline-block; vertical-align:middle; margin-top:-2px;">
+                                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.42 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.66a16 16 0 0 0 6.07 6.07l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+                                                                  stroke="#1d4ed8" stroke-width="1.8"
+                                                                  stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                    </span>
+                                                    Llamar ahora
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+
+                <!-- ═══════════════════════════════════════
+                     FOOTER
+                ════════════════════════════════════════ -->
+                <tr>
+                    <td style="background-color:#f8fafc; border-top:1px solid #e2e8f0; padding:28px 40px;"
+                        class="mobile-pad dark-detail-bg dark-border">
+
+                        <!-- Logo footer (condicional) -->
+                        <div th:if="${clinicLogoUrl}" style="text-align:center; margin-bottom:16px;">
+                            <img th:src="${clinicLogoUrl}" alt="Logo" width="90"
+                                 style="max-width:90px; height:auto; opacity:0.55; display:inline-block;">
+                        </div>
+
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td align="center">
+                                    <p style="margin:0 0 4px; font-family:Arial,Helvetica,sans-serif; font-size:14px;
+                                              font-weight:700; color:#334155; letter-spacing:0.2px;" class="dark-text">
+                                        <span th:text="${clinicName}">Clínica Dental</span>
+                                    </p>
+                                    <p style="margin:0 0 4px; font-family:Arial,Helvetica,sans-serif;
+                                              font-size:13px; color:#94a3b8;">
+                                        <a th:href="'mailto:' + ${clinicEmail}" th:text="${clinicEmail}"
+                                           style="color:#1d4ed8; text-decoration:none;">info@clinica.com</a>
+                                    </p>
+                                    <p style="margin:0 0 20px; font-family:Arial,Helvetica,sans-serif;
+                                              font-size:13px; color:#94a3b8;">
+                                        <a th:href="'tel:' + ${clinicaWhatsApp}" th:text="${clinicaWhatsApp}"
+                                           style="color:#94a3b8; text-decoration:none;">+54 9 11 1234-5678</a>
+                                    </p>
+                                    <p style="margin:0; font-family:Arial,Helvetica,sans-serif;
+                                              font-size:11px; color:#cbd5e1;">
+                                        © <span th:text="${currentYear}">2025</span>
+                                        <span th:text="${clinicName}">Clínica Dental</span>.
+                                        Todos los derechos reservados.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Línea de acento inferior -->
+                <tr>
+                    <td height="4" style="background-color:#1d4ed8; font-size:0; line-height:0;">&nbsp;</td>
+                </tr>
+
+            </table>
+            <!-- /CONTENEDOR PRINCIPAL -->
+
+        </td>
+    </tr>
+</table>
+<!-- /WRAPPER -->
+
+</body>
+</html>
