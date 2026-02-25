@@ -13,7 +13,7 @@ public record AgendaRequestDTO(Long id_agenda,
                                @NotBlank LocalDate finalDate,
                                @NotBlank Integer duration_minutes,
                                Boolean active,
-                               @NotBlank Long idUserApp,
+                               @NotBlank Long idDentist,
                                Long idProduct,
                                @NotBlank List<Schedule> schedules) {
 }
