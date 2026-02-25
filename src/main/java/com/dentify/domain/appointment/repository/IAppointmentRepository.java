@@ -2,11 +2,13 @@ package com.dentify.domain.appointment.repository;
 
 import com.dentify.domain.appointment.enums.AppointmentStatus;
 import com.dentify.domain.appointment.model.Appointment;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,13 +18,7 @@ import java.util.Optional;
 @Repository
 public interface IAppointmentRepository extends JpaRepository<Appointment, Long> {
 
-    List<Appointment> findByAppointmentStatusAndDateBetween(AppointmentStatus appointmentStatus, LocalDate dateStart, LocalDate dateEnd);
-
-    List<Appointment> findByDateBeforeAndAppointmentStatusIn(LocalDate date, List<AppointmentStatus> appointmentStatus);
-
     List<Appointment> findByDate(LocalDate date);
-
-    List<Appointment> findByDateAndAppointmentStatus(LocalDate date, AppointmentStatus appointmentStatus);
 
     List<Appointment> findByStartTimeBetween(LocalTime start, LocalTime end);
 
@@ -88,4 +84,41 @@ public interface IAppointmentRepository extends JpaRepository<Appointment, Long>
             "LEFT JOIN FETCH app.pays " +
             "WHERE app.id_appointment = :id")
     Optional<Appointment> findByIdWithAllDetails(@Param("id") Long id);
+
+    @Query("SELECT app FROM Appointment app " +
+            "JOIN FETCH app.patient " +
+            "WHERE app.id_appointment = :id")
+    Optional<Appointment> findByIdWithPatient(@Param("id") Long id);
+
+    @Query("""
+    SELECT COUNT(a)
+    FROM Appointment a
+    WHERE a.date = CURRENT_DATE
+      AND a.appointmentStatus NOT IN :statuses
+    """)
+    Long countAppointmentsTodayExcludingStatuses(@Param("statuses") List<AppointmentStatus> statuses);
+
+    @Query("""
+    SELECT a
+    FROM Appointment a
+    JOIN FETCH a.patient p
+    WHERE a.date = :date
+      AND a.appointmentStatus IN :statuses
+      AND a.startTime >= :currentTime
+    ORDER BY a.startTime ASC
+    """)
+    List<Appointment> findNextAppointment(
+            @Param("date") LocalDate date,
+            @Param("currentTime") LocalTime currentTime,
+            @Param("statuses") List<AppointmentStatus> statuses,
+            Pageable pageable
+    );
+
+    @EntityGraph(attributePaths = "pays")
+    @Query("""
+       SELECT a
+       FROM Appointment a
+       WHERE a.id_appointment = :id
+       """)
+    Optional<Appointment> findByIdWithPays(@Param("id") Long id);
 }
