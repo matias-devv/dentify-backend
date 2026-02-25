@@ -1,9 +1,10 @@
 package com.dentify.domain.agenda.model;
 
 import com.dentify.domain.appointment.model.Appointment;
+import com.dentify.domain.dentist.Dentist;
 import com.dentify.domain.schedule.model.Schedule;
 import com.dentify.domain.product.model.Product;
-import com.dentify.domain.user.model.AppUser;
+import com.dentify.domain.userProfile.model.UserProfile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,11 +22,6 @@ public class Agenda {
     @Id @GeneratedValue ( strategy = GenerationType.IDENTITY)
     private Long id_agenda;
 
-    // n agendas -> 1 user
-    @ManyToOne ( fetch =  FetchType.LAZY)
-    @JoinColumn ( name = "id_user")
-    private AppUser app_user;
-
     private String agenda_name;
     private Boolean active;
 
@@ -37,6 +33,11 @@ public class Agenda {
 
     @Column( name = "duration_minutes", nullable = false)
     private Integer duration_minutes;
+
+    // N:1 — la agenda siempre pertenece a un dentista
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "dentist_id", nullable = false)
+    private Dentist dentist;
 
     // n agendas -> 1 product
     @ManyToOne( fetch =  FetchType.LAZY)
